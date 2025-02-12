@@ -1,0 +1,69 @@
+/* 로그인 컨테이너 */
+.login-container {
+    width: 400px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 50px;
+}
+
+/* 입력 필드 그룹 */
+.input-group {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+/* input 필드 스타일 */
+.input-group label {
+    font-size: 14px;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* helper text 기본 스타일 */
+.helper-text {
+    font-size: 12px;
+    color: red;
+    margin-top: 5px;
+    height: 15px; /* 고정 높이 설정 */
+    visibility: visible; /* 초기 상태에서 공간 차지 */
+}
+
+/* helper text 숨김 처리 (공간 유지) */
+.hidden {
+    visibility: hidden; /* 요소는 유지하면서 안 보이게 함 */
+}
+
+/* 버튼 스타일 */
+.login-btn, .signup-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-btn {
+    background-color: #ACA0EB;
+    color: white;
+}
+
+.login-btn:disabled {
+    background-color: #ACA0EB; /* 비활성화된 상태 */
+}
+
+.signup-btn {
+    background-color: #e0e0e0;
+    color: black;
+}
