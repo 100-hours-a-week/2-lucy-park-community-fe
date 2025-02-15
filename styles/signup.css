@@ -2,6 +2,12 @@ h2 {
     text-align: center;
 }
 
+.back-button {
+    position: absolute;
+    left: 280px; /* 기본 위치에서 오른쪽으로 100px 이동 */
+    top: 0px; /* 상단 여백 유지 */
+}
+
 .profile-section {
     text-align: center;
     margin-bottom: 15px;

@@ -1,3 +1,4 @@
+// login.js
 import { loadPage } from "../../scripts/app.js"; 
 import { ValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 
@@ -147,11 +148,18 @@ async function handleLogin(event) {
 
 // 더미 API
 async function fakeLoginAPI(username, password) {
+  const storedUser = JSON.parse(localStorage.getItem("user"));
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        success: username === "test@example.com" && password === "Test1234!"
+        success: username === storedUser.email && password === storedUser.password
       });
+      
+      // ✅ 로그인 성공 시 userStatus를 true로 설정
+      storedUser.userStatus = true;
+
+      // ✅ 변경된 storedUser를 다시 localStorage에 저장
+      localStorage.setItem("user", JSON.stringify(storedUser));
     }, 300);
   });
 }
