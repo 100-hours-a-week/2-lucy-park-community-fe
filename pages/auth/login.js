@@ -1,7 +1,8 @@
 // pages/auth/login.js
+
+import { loadPage } from "../../scripts/app.js"; 
 import { ValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 
-// render()는 로그인 화면의 HTML을 반환합니다.
 export function render() {
   return `
     <section class="login-container">
@@ -30,106 +31,99 @@ export function render() {
   `;
 }
 
-// setup()은 render 후 CSS 로드 및 이벤트 바인딩을 수행합니다.
 export function setup() {
   loadStyles();
   setupEventListeners();
 }
 
-// CSS 동적 로드
 function loadStyles() {
-  // index.html 기준으로 경로 지정: styles 폴더에 login.css
+  // index.html 위치 기준으로 경로 설정
   if (!document.getElementById("login-css")) {
-    const loginLink = document.createElement("link");
-    loginLink.id = "login-css";
-    loginLink.rel = "stylesheet";
-    loginLink.href = "styles/login.css"; 
-    document.head.appendChild(loginLink);
+    const link = document.createElement("link");
+    link.id = "login-css";
+    link.rel = "stylesheet";
+    link.href = "styles/login.css";
+    document.head.appendChild(link);
   }
-
-  // ValidationButton CSS: index.html 기준으로 components 폴더 내 경로
   if (!document.getElementById("validation-button-css")) {
-    const validationLink = document.createElement("link");
-    validationLink.id = "validation-button-css";
-    validationLink.rel = "stylesheet";
-    validationLink.href = "components/ValidationButton/ValidationButton.css";
-    document.head.appendChild(validationLink);
+    const link = document.createElement("link");
+    link.id = "validation-button-css";
+    link.rel = "stylesheet";
+    link.href = "components/ValidationButton/ValidationButton.css";
+    document.head.appendChild(link);
   }
 }
 
-// 이벤트 리스너 등록
 function setupEventListeners() {
   const loginForm = document.getElementById("login-form");
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
 
-  // ValidationButton 인스턴스 생성
+  // ValidationButton
   const loginButton = new ValidationButton("login-btn");
 
-  // 입력값 변경 시 유효성 검사
-  usernameInput.addEventListener("input", () => validateInputs(loginButton));
-  passwordInput.addEventListener("input", () => validateInputs(loginButton));
+  // 이메일 & 비밀번호 검증
+  usernameInput.addEventListener("input", () => {
+    loginButton.updateValidationState(
+      validateEmailField() && validatePasswordField()
+    );
+  });
+  passwordInput.addEventListener("input", () => {
+    loginButton.updateValidationState(
+      validateEmailField() && validatePasswordField()
+    );
+  });
 
   if (loginForm) {
     loginForm.addEventListener("submit", handleLogin);
   }
 }
 
-// 이메일 유효성 검사
-function validateEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-
-// 비밀번호 유효성 검사
-function validatePassword(password) {
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
-  return passwordRegex.test(password);
-}
-
-// 입력값에 따른 유효성 검사 및 helper 텍스트 업데이트
-function validateInputs(validationButton) {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
+function validateEmailField() {
+  const value = document.getElementById("username").value.trim();
   const emailHelper = document.getElementById("email-helper");
-  const passwordHelper = document.getElementById("password-helper");
-
-  let isValid = true;
-
-  // 이메일 검사
-  if (!username) {
+  if (!value) {
     emailHelper.textContent = "*이메일을 입력해주세요.";
     emailHelper.classList.remove("hidden");
-    isValid = false;
-  } else if (!validateEmail(username)) {
+    return false;
+  } else if (!validateEmail(value)) {
     emailHelper.textContent = "*올바른 이메일 주소를 입력하세요 (예: example@example.com)";
     emailHelper.classList.remove("hidden");
-    isValid = false;
+    return false;
   } else {
     emailHelper.classList.add("hidden");
+    return true;
   }
-
-  // 비밀번호 검사
-  if (!password) {
-    passwordHelper.textContent = "*비밀번호를 입력해주세요.";
-    passwordHelper.classList.remove("hidden");
-    isValid = false;
-  } else if (!validatePassword(password)) {
-    passwordHelper.textContent = "*비밀번호는 8~20자, 대소문자, 숫자, 특수문자를 포함해야 합니다.";
-    passwordHelper.classList.remove("hidden");
-    isValid = false;
-  } else {
-    passwordHelper.classList.add("hidden");
-  }
-
-  // 버튼 활성화/비활성 업데이트
-  validationButton.updateValidationState(isValid);
 }
 
-// 로그인 처리 (더미 API)
+function validatePasswordField() {
+  const value = document.getElementById("password").value.trim();
+  const passwordHelper = document.getElementById("password-helper");
+  if (!value) {
+    passwordHelper.textContent = "*비밀번호를 입력해주세요.";
+    passwordHelper.classList.remove("hidden");
+    return false;
+  } else if (!validatePassword(value)) {
+    passwordHelper.textContent = "*비밀번호는 8~20자, 대소문자, 숫자, 특수문자를 포함해야 합니다.";
+    passwordHelper.classList.remove("hidden");
+    return false;
+  } else {
+    passwordHelper.classList.add("hidden");
+    return true;
+  }
+}
+
+function validateEmail(email) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+}
+function validatePassword(password) {
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+  return regex.test(password);
+}
+
 async function handleLogin(event) {
   event.preventDefault();
-
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
 
@@ -137,7 +131,8 @@ async function handleLogin(event) {
     const response = await fakeLoginAPI(username, password);
     if (response.success) {
       alert("로그인 성공!");
-      window.location.href = "#home";
+      // **로그인 성공 시 게시글 목록 페이지 로드** (SPA 방식)
+      loadPage("../pages/posts/list.js");
     } else {
       alert("아이디 또는 비밀번호를 확인해주세요.");
     }
@@ -146,13 +141,13 @@ async function handleLogin(event) {
   }
 }
 
-// 더미 로그인 API (실제 API로 대체 가능)
+// 더미 API
 async function fakeLoginAPI(username, password) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
         success: username === "test@example.com" && password === "Test1234!"
       });
-    }, 500);
+    }, 300);
   });
 }
