@@ -1,5 +1,3 @@
-// pages/auth/login.js
-
 import { loadPage } from "../../scripts/app.js"; 
 import { ValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 
@@ -37,7 +35,6 @@ export function setup() {
 }
 
 function loadStyles() {
-  // index.html 위치 기준으로 경로 설정
   if (!document.getElementById("login-css")) {
     const link = document.createElement("link");
     link.id = "login-css";
@@ -58,6 +55,7 @@ function setupEventListeners() {
   const loginForm = document.getElementById("login-form");
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
+  const signupButton = document.getElementById("signup-btn"); // 회원가입 버튼
 
   // ValidationButton
   const loginButton = new ValidationButton("login-btn");
@@ -76,6 +74,13 @@ function setupEventListeners() {
 
   if (loginForm) {
     loginForm.addEventListener("submit", handleLogin);
+  }
+
+  // 회원가입 버튼 클릭 시 회원가입 페이지로 이동
+  if (signupButton) {
+    signupButton.addEventListener("click", () => {
+      loadPage("/pages/auth/signup.js");
+    });
   }
 }
 
@@ -131,7 +136,6 @@ async function handleLogin(event) {
     const response = await fakeLoginAPI(username, password);
     if (response.success) {
       alert("로그인 성공!");
-      // **로그인 성공 시 게시글 목록 페이지 로드** (SPA 방식)
       loadPage("../pages/posts/list.js");
     } else {
       alert("아이디 또는 비밀번호를 확인해주세요.");
