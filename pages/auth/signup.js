@@ -1,14 +1,21 @@
-import { loadPage } from "../../scripts/app.js"; 
+import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js"; // ✅ 경로 수정
+import { loadPage } from "../../scripts/app.js"; // ✅ loadPage 추가
 
 export function render() {
   return `
     <section class="signup-container">
+      ${BackButton("pages/auth/login.js")}
       <h2>회원가입</h2>
       <form id="signup-form">
         <div class="profile-section">
           <label for="profile-pic">프로필 사진</label>
-          <input type="file" id="profile-pic" accept="image/*" />
-          <p class="helper-text">* 프로필 사진을 추가해주세요.</p>
+          <div id="profile-pic-preview" class="profile-pic-preview">
+            <span>+</span>
+          </div>
+          <input type="file" id="profile-pic" accept="image/*" hidden />
+          <p id="profile-helper" class="helper-text hidden">
+            * 프로필 사진을 추가해주세요.
+          </p>
         </div>
 
         <div class="input-group">
@@ -53,6 +60,7 @@ export function render() {
 export function setup() {
   loadStyles();
   setupEventListeners();
+  setupBackButton("../pages/auth/login.js");
 }
 
 function loadStyles() {
@@ -67,23 +75,46 @@ function loadStyles() {
 
 function setupEventListeners() {
   document.getElementById("login-page-btn").addEventListener("click", () => {
-    loadPage("../auth/login.js");
+    loadPage("../pages/auth/login.js");
   });
 
   document.getElementById("signup-form").addEventListener("input", validateForm);
   document.getElementById("signup-form").addEventListener("submit", handleSignup);
+
+  // 📌 프로필 사진 업로드 이벤트 수정
+  const profilePicInput = document.getElementById("profile-pic");
+  const profilePicPreview = document.getElementById("profile-pic-preview");
+
+  profilePicPreview.addEventListener("click", () => {
+    setTimeout(() => {
+      profilePicInput.click();
+    }, 50);
+  });
+
+  profilePicInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        profilePicPreview.style.backgroundImage = `url('${e.target.result}')`;
+        profilePicPreview.innerHTML = "";
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 }
 
+// 📌 유효성 검사 함수
 function validateForm() {
-  const emailValid = validateEmailField();
-  const passwordValid = validatePasswordField();
-  const confirmPasswordValid = validateConfirmPasswordField();
-  const nicknameValid = validateNicknameField();
-  
+  const emailValid = validateEmail();
+  const passwordValid = validatePassword();
+  const confirmPasswordValid = validateConfirmPassword();
+  const nicknameValid = validateNickname();
+
   document.getElementById("signup-btn").disabled = !(emailValid && passwordValid && confirmPasswordValid && nicknameValid);
 }
 
-function validateEmailField() {
+function validateEmail() {
   const email = document.getElementById("email").value.trim();
   const helper = document.getElementById("email-helper");
   const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -91,7 +122,7 @@ function validateEmailField() {
   return isValid;
 }
 
-function validatePasswordField() {
+function validatePassword() {
   const password = document.getElementById("password").value.trim();
   const helper = document.getElementById("password-helper");
   const isValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/.test(password);
@@ -99,7 +130,7 @@ function validatePasswordField() {
   return isValid;
 }
 
-function validateConfirmPasswordField() {
+function validateConfirmPassword() {
   const password = document.getElementById("password").value.trim();
   const confirmPassword = document.getElementById("confirm-password").value.trim();
   const helper = document.getElementById("confirm-password-helper");
@@ -108,7 +139,7 @@ function validateConfirmPasswordField() {
   return isValid;
 }
 
-function validateNicknameField() {
+function validateNickname() {
   const nickname = document.getElementById("nickname").value.trim();
   const helper = document.getElementById("nickname-helper");
   const isValid = nickname.length >= 2 && nickname.length <= 10;
@@ -116,7 +147,7 @@ function validateNicknameField() {
   return isValid;
 }
 
-async function handleSignup(event) {
+function handleSignup(event) {
   event.preventDefault();
   alert("회원가입 성공!");
   loadPage("../auth/login.js");
