@@ -71,7 +71,7 @@ function loadStyles() {
     const link = document.createElement("link");
     link.id = "signup-css";
     link.rel = "stylesheet";
-    link.href = "styles/signup.css";
+    link.href = "styles/auth/signup.css";
     document.head.appendChild(link);
   }
 }

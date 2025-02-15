@@ -40,7 +40,7 @@ function loadStyles() {
     const link = document.createElement("link");
     link.id = "login-css";
     link.rel = "stylesheet";
-    link.href = "styles/login.css";
+    link.href = "styles/auth/login.css";
     document.head.appendChild(link);
   }
   if (!document.getElementById("validation-button-css")) {
