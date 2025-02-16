@@ -16,20 +16,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-/** 다른 모듈에서 사용할 수 있게 export */
-export function loadPage(pageScript) {
-  // 동적으로 모듈 import
+/** ✅ loadPage 수정: params를 추가하여 데이터 전달 */
+export function loadPage(pageScript, params = {}) {
   import(pageScript)
     .then((module) => {
-      // 모듈이 render()를 제공하면, #content에 삽입
       const contentElem = document.getElementById("content");
-      if (module.render) {
-        contentElem.innerHTML = module.render();
+
+      if (module.init) {
+        module.init(params).then((html) => {
+          contentElem.innerHTML = html;
+        });
+      } else if (module.render) {
+        contentElem.innerHTML = module.render(params);
       } else {
-        contentElem.innerHTML = ""; // render 없으면 기본값
+        contentElem.innerHTML = "";
       }
 
-      // 모듈이 setup()를 제공하면, 추가 초기화 수행 (이벤트, CSS 로드 등)
       if (module.setup) {
         module.setup();
       }
@@ -39,7 +41,8 @@ export function loadPage(pageScript) {
     });
 }
 
-// (예시) nav-link 클릭 시 data-page 경로로 이동
+
+// ✅ nav-link 클릭 시 data-page 경로로 이동
 document.addEventListener("click", (event) => {
   if (event.target.classList.contains("nav-link")) {
     event.preventDefault();

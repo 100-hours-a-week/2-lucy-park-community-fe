@@ -1,5 +1,6 @@
 import { loadPage } from "../../scripts/app.js";
 import { HoverButton, setupHoverButton } from "../../components/HoverButton/HoverButton.js";
+import { truncateText, formatDate, formatCount } from "../../scripts/utils.js"; // ✅ 유틸 함수 import
 
 export function render() {
   return `
@@ -78,9 +79,9 @@ async function loadPosts() {
       `;
 
       li.addEventListener("click", () => {
-        // ✅ 클릭한 게시글의 ID를 URL 파라미터로 전달하여 post.js로 이동
-        loadPage("../posts/post.js", { postId: post.id });
+        loadPage("../pages/posts/post.js", { id: post.id }); // ✅ URL에 id 추가
       });
+      
 
       postList.appendChild(li);
     });
@@ -94,19 +95,3 @@ async function loadPosts() {
 
 // 📌 무한 스크롤 (JSON 데이터에서는 추가 로딩 없이 전체 표시)
 function handleInfiniteScroll() {}
-
-function truncateText(text, maxLength) {
-  return text.length > maxLength ? text.substring(0, maxLength) + "…" : text;
-}
-
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  return date.toISOString().split("T")[0] + " " + date.toTimeString().split(" ")[0];
-}
-
-function formatCount(count) {
-  if (count >= 100000) return `${Math.floor(count / 1000)}k`;
-  if (count >= 10000) return `${(count / 1000).toFixed(1)}k`;
-  if (count >= 1000) return `${Math.floor(count / 1000)}k`;
-  return count;
-}
