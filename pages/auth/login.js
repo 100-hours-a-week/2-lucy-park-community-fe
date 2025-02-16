@@ -137,7 +137,7 @@ async function handleLogin(event) {
     const response = await fakeLoginAPI(username, password);
     if (response.success) {
       alert("로그인 성공!");
-      loadPage("../pages/posts/list.js");
+      loadPage("../pages/posts/posts.js");
     } else {
       alert("아이디 또는 비밀번호를 확인해주세요.");
     }

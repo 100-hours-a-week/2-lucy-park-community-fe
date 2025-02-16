@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 🔥 로그인 상태 확인 후 시작 페이지 결정
   const storedUser = JSON.parse(localStorage.getItem("user"));
   if (storedUser && storedUser.userStatus) {
-    loadPage("../pages/posts/list.js"); // ✅ 로그인된 경우 게시판으로 이동
+    loadPage("../pages/posts/posts.js"); // ✅ 로그인된 경우 게시판으로 이동
   } else {
     loadPage("../pages/auth/login.js"); // ✅ 비로그인 상태면 로그인 화면
   }
