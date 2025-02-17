@@ -1,82 +1,172 @@
-/* ✅ 게시글 컨테이너 */
+/* 게시글 컨테이너 */
 .post-container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* ✅ 게시글 제목 */
-  .post-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  /* ✅ 메타 정보 */
-  .post-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #777;
-    font-size: 14px;
-    border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 10px;
-  }
-  
-  /* ✅ 작성자 정보 */
-  .author-info {
-    display: flex;
-    align-items: center;
-  }
-  
-  .profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
-  
-  /* ✅ 게시글 수정/삭제 버튼 */
-  .post-actions {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .edit-btn, .delete-btn {
-    background-color: #ACA0EB;
-    color: white;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .delete-btn {
-    background-color: #FF6B6B;
-  }
-  
-  .edit-btn:hover {
-    background-color: #7F6AEE;
-  }
-  
-  .delete-btn:hover {
-    background-color: #D94545;
-  }
-  
-  /* ✅ 게시글 본문 */
-  .post-content {
-    font-size: 16px;
-    line-height: 1.6;
-    margin-top: 20px;
-  }
-  
-  /* ✅ 댓글 섹션 */
-  .comment-section {
-    margin-top: 30px;
-    padding: 10px;
-    border-top: 1px solid #e0e0e0;
-  }
-  
+  position: relative;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.back-button {
+  position: fixed; /* 고정 위치 */
+  top: 15px; /* 헤더보다 조금 아래 */
+  left: 350px; /* 왼쪽 상단에 배치 */
+  z-index: 1000; /* 헤더보다 위에 위치 */
+  background: rgba(255, 255, 255, 0.8); /* 배경색 추가 */
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+
+/* 게시글 제목 */
+.post-title {
+  font-size: 24px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+/* 작성자, 등록일 등 메타 정보 */
+.post-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* 게시글 수정/삭제 버튼 */
+.post-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn,
+.delete-btn {
+  cursor: pointer;
+  border: none;
+  padding: 6px 12px;
+  background-color: #eee;
+  border-radius: 4px;
+}
+
+.edit-btn:hover,
+.delete-btn:hover {
+  background-color: #ddd;
+}
+
+/* 게시글 본문 */
+.post-content {
+  margin-bottom: 24px;
+  line-height: 1.5;
+  white-space: pre-line; /* 줄바꿈을 위해 */
+}
+
+/* 통계(좋아요/조회수/댓글수) */
+.post-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.post-stats span {
+  display: inline-block;
+  padding: 8px 12px;
+  background-color: #fafafa;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* 댓글 컨테이너 */
+.comments-container {
+  margin-top: 32px;
+  border-top: 1px solid #ddd;
+  padding-top: 16px;
+}
+
+/* 댓글 입력 영역 */
+.comment-form {
+  margin-bottom: 24px;
+}
+
+.comment-input {
+  width: 100%;
+  height: 80px;
+  box-sizing: border-box;
+  padding: 8px;
+  margin-bottom: 8px;
+  resize: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* 개별 댓글 스타일 */
+.comment-item {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.comment-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.comment-author {
+  font-weight: bold;
+  position: relative;
+}
+
+.comment-nickname {
+  position: absolute;
+  width: 300px;
+  top: 3px;
+  left: 34px;
+  margin-top: 0; 
+}
+
+.comment-content {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.comment-date {
+  font-size: 0.875rem;
+  color: #888;
+}
+
+/* 댓글 수정/삭제 */
+.comment-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-comment-btn,
+.delete-comment-btn {
+  cursor: pointer;
+  border: none;
+  padding: 4px 8px;
+  background-color: #eee;
+  border-radius: 4px;
+}
+
+.edit-comment-btn:hover,
+.delete-comment-btn:hover {
+  background-color: #ddd;
+}

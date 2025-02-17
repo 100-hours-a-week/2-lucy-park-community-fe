@@ -1,65 +1,69 @@
 {
-    "posts": [
-      {
-        "id": 1,
-        "title": "첫 번째 게시글입니다!",
-        "author": {
-          "name": "더미 작성자 1",
-          "profilePic": "default-profile.png"
-        },
-        "createdAt": "2024-02-15T10:00:00Z",
-        "likes": 1234,
-        "comments": 45,
-        "views": 67890
+  "posts": [
+    {
+      "id": 1,
+      "title": "첫 번째 게시글입니다!",
+      "author": {
+        "name": "더미 작성자 1",
+        "profilePic": "assets/default-profile.png"
       },
-      {
-        "id": 2,
-        "title": "안녕하세요! 아무 말 대잔치 게시판에 오신 걸 환영합니다!",
-        "author": {
-          "name": "더미 작성자 2",
-          "profilePic": "default-profile.png"
-        },
-        "createdAt": "2024-02-14T14:30:00Z",
-        "likes": 56,
-        "comments": 12,
-        "views": 3200
+      "createdAt": "2024-02-15T10:00:00Z",
+      "likes": 34,
+      "comments": 45,
+      "views": 67890,
+      "content": "안녕하세요, 이 글은 첫 번째 게시글의 본문 내용입니다. 오늘은 날씨가 참 좋네요. 많은 분들이 읽어주셨으면 좋겠습니다!"
+    },
+    {
+      "id": 2,
+      "title": "안녕하세요! 아무 말 대잔치 게시판에 오신 걸 환영합니다!",
+      "author": {
+        "name": "더미 작성자 2",
+        "profilePic": "assets/default-profile.png"
       },
-      {
-        "id": 3,
-        "title": "프론트엔드 개발이 재미있네요.",
-        "author": {
-          "name": "프론트엔드 개발자",
-          "profilePic": "default-profile.png"
-        },
-        "createdAt": "2024-02-13T18:45:00Z",
-        "likes": 789,
-        "comments": 67,
-        "views": 15500
+      "createdAt": "2024-02-14T14:30:00Z",
+      "likes": 56,
+      "comments": 12,
+      "views": 3200,
+      "content": "이 게시판에서는 누구든지 자유롭게 아무 말이나 남길 수 있습니다. 궁금한 점, 하고 싶은 말, 다 좋아요. 생각나는 대로 편하게 댓글 달아주세요!"
+    },
+    {
+      "id": 3,
+      "title": "프론트엔드 개발이 재미있네요.",
+      "author": {
+        "name": "프론트엔드 개발자",
+        "profilePic": "assets/default-profile.png"
       },
-      {
-        "id": 4,
-        "title": "오늘의 점심 메뉴 추천해주세요!",
-        "author": {
-          "name": "더미 작성자 3",
-          "profilePic": "default-profile.png"
-        },
-        "createdAt": "2024-02-12T12:00:00Z",
-        "likes": 30,
-        "comments": 5,
-        "views": 900
+      "createdAt": "2024-02-13T18:45:00Z",
+      "likes": 789,
+      "comments": 67,
+      "views": 15500,
+      "content": "최근에 자바스크립트 프레임워크 공부를 시작했는데, 예상보다 훨씬 재미있네요. 앞으로도 계속 열심히 공부하면서 다양한 프로젝트에 참여해보고 싶습니다."
+    },
+    {
+      "id": 4,
+      "title": "오늘의 점심 메뉴 추천해주세요!",
+      "author": {
+        "name": "더미 작성자 3",
+        "profilePic": "assets/default-profile.png"
       },
-      {
-        "id": 5,
-        "title": "이 게시판은 정말 재밌네요 ㅋㅋㅋ",
-        "author": {
-          "name": "익명의 사용자",
-          "profilePic": "default-profile.png"
-        },
-        "createdAt": "2024-02-11T21:15:00Z",
-        "likes": 512,
-        "comments": 34,
-        "views": 11200
-      }
-    ]
-  }
-  
+      "createdAt": "2024-02-12T12:00:00Z",
+      "likes": 30,
+      "comments": 5,
+      "views": 900,
+      "content": "오늘은 뭘 먹어야 할지 고민되네요. 배달음식부터 간단한 요리까지 괜찮은 메뉴 있으면 추천 부탁드려요!"
+    },
+    {
+      "id": 5,
+      "title": "이 게시판은 정말 재밌네요 ㅋㅋㅋ",
+      "author": {
+        "name": "익명의 사용자",
+        "profilePic": "assets/default-profile.png"
+      },
+      "createdAt": "2024-02-11T21:15:00Z",
+      "likes": 512,
+      "comments": 34,
+      "views": 11200,
+      "content": "방금 전까지 다른 글들 쭉 둘러봤는데, 서로 댓글 달아주는 모습이 너무 재미있더라고요. 앞으로도 계속 들를게요!"
+    }
+  ]
+}

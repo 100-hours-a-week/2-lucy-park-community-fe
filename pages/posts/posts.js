@@ -22,9 +22,9 @@ export function setup() {
 }
 
 function loadStyles() {
-  if (!document.getElementById("post-css")) {
+  if (!document.getElementById("posts-css")) {
     const link = document.createElement("link");
-    link.id = "post-css";
+    link.id = "posts-css";
     link.rel = "stylesheet";
     link.href = "styles/posts/posts.css";
     document.head.appendChild(link);

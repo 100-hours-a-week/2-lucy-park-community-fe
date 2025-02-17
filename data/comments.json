@@ -1,0 +1,29 @@
+{
+    "comments": [
+      {
+        "id": "c1",
+        "postId": "1",
+        "author": "더미 작성자 1",
+        "profilePic": "assets/default-profile.png",
+        "content": "첫 번째 댓글 내용입니다. 반갑습니다!",
+        "createdAt": "2024-02-15T10:05:00Z"
+      },
+      {
+        "id": "c2",
+        "postId": "1",
+        "author": "더미 작성자 2",
+        "profilePic": "assets/default-profile.png",
+        "content": "두 번째 댓글 내용입니다. 좋은 하루 되세요!",
+        "createdAt": "2024-02-15T10:10:00Z"
+      },
+      {
+        "id": "c3",
+        "postId": "2",
+        "author": "더미 작성자 3",
+        "profilePic": "assets/default-profile.png",
+        "content": "2번 게시글에 대한 댓글입니다.",
+        "createdAt": "2024-02-15T12:00:00Z"
+      }
+    ]
+  }
+  
