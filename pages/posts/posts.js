@@ -1,12 +1,12 @@
 import { loadPage } from "../../scripts/app.js";
 import { HoverButton, setupHoverButton } from "../../components/HoverButton/HoverButton.js";
-import { truncateText, formatDate, formatCount } from "../../scripts/utils.js"; // ✅ 유틸 함수 import
+import { truncateText, formatDate, formatCount } from "../../scripts/utils.js"; 
 
 export function render() {
   return `
     <section class="post-list-container">
       <p class="welcome-message">안녕하세요,<br>아무 말 대잔치 게시판 입니다.</p>
-      <div id="create-post-btn-container">${HoverButton("게시글 작성", "create-post-btn")}</div>
+      <div id="create-post-btn-container"></div>
       
       <ul id="post-list" class="post-list"></ul>
       <div id="loading" class="loading hidden">게시글 불러오는 중...</div>
@@ -18,25 +18,39 @@ export function setup() {
   loadStyles();
   loadPosts();
   setupEventListeners();
-  setupHoverButton("create-post-btn", () => loadPage("../posts/create.js"));
+  
+  setTimeout(() => {
+    const btnContainer = document.getElementById("create-post-btn-container");
+    if (btnContainer) {
+      btnContainer.innerHTML = HoverButton("게시글 작성", "make-post-btn");
+    }
+    
+    const button = document.getElementById("make-post-btn");
+    if (!button) {
+      console.error("❌ make-post-btn 버튼을 찾을 수 없습니다.");
+      return;
+    }
+    console.log("✅ make-post-btn 버튼 찾음. 클릭 이벤트 추가 중...");
+    button.addEventListener("click", () => {
+      console.log("🔄 make-post-btn 클릭됨! 페이지 이동 실행...");
+      loadPage("../pages/posts/makePost.js");
+    });
+  }, 300);
 }
 
 function loadStyles() {
-  if (!document.getElementById("posts-css")) {
-    const link = document.createElement("link");
-    link.id = "posts-css";
-    link.rel = "stylesheet";
-    link.href = "styles/posts/posts.css";
-    document.head.appendChild(link);
-  }
-
-  if (!document.getElementById("hover-button-css")) {
-    const link = document.createElement("link");
-    link.id = "hover-button-css";
-    link.rel = "stylesheet";
-    link.href = "../../components/HoverButton/HoverButton.css";
-    document.head.appendChild(link);
-  }
+  [
+    { id: "posts-css", href: "styles/posts/posts.css" },
+    { id: "hover-button-css", href: "../../components/HoverButton/HoverButton.css" }
+  ].forEach(({ id, href }) => {
+    if (!document.getElementById(id)) {
+      const link = document.createElement("link");
+      link.id = id;
+      link.rel = "stylesheet";
+      link.href = href;
+      document.head.appendChild(link);
+    }
+  });
 }
 
 function setupEventListeners() {
@@ -46,7 +60,6 @@ function setupEventListeners() {
 async function loadPosts() {
   const postList = document.getElementById("post-list");
   const loading = document.getElementById("loading");
-
   loading.classList.remove("hidden");
 
   try {
@@ -55,17 +68,13 @@ async function loadPosts() {
       throw new Error(`Failed to load JSON: ${response.status} ${response.statusText}`);
     }
 
-    const data = await response.json();
-    const posts = data.posts;
-
-    // 게시글 데이터를 로컬 스토리지에 저장하여 post.js에서 사용 가능하도록 함
-    localStorage.setItem("posts", JSON.stringify(posts));
+    const { posts } = await response.json();
+    localStorage.setItem("posts", JSON.stringify(posts)); // 게시글 데이터를 로컬 스토리지에 저장
 
     posts.forEach(post => {
       const li = document.createElement("li");
       li.classList.add("post-card");
-      li.dataset.postId = post.id; // 게시글 ID 저장
-
+      li.dataset.postId = post.id;
       li.innerHTML = `
         <h3 class="post-title">${truncateText(post.title, 26)}</h3>
         <p class="post-meta">
@@ -77,15 +86,9 @@ async function loadPosts() {
           <span>${post.author.name}</span>
         </div>
       `;
-
-      li.addEventListener("click", () => {
-        loadPage("../pages/posts/post.js", { id: post.id }); // ✅ URL에 id 추가
-      });
-      
-
+      li.addEventListener("click", () => loadPage("../pages/posts/post.js", { id: post.id }));
       postList.appendChild(li);
     });
-
   } catch (error) {
     console.error("게시글 로딩 오류:", error);
   } finally {

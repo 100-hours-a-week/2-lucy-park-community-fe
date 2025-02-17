@@ -2,7 +2,7 @@ import { loadPage } from "../../scripts/app.js";
 import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { ConfirmPopup, setupConfirmPopup } from "../../components/ConfirmPopup/ConfirmPopup.js";
 import { ValidationButton } from "../../components/ValidationButton/ValidationButton.js";
-import { formatCount, formatDate } from "../../scripts/utils.js";
+import { formatCount, formatDate, getPostData } from "../../scripts/utils.js";
 
 let commentToDelete = null; // 삭제할 댓글 ID
 let editCommentId = null;   // 수정 중인 댓글 ID (없으면 null)
@@ -173,8 +173,9 @@ function setupPage(postId) {
   // 게시글 수정 
   const editBtn = document.getElementById("edit-post-btn");
   if (editBtn) {
+    //console.log("postId", postId);
     editBtn.addEventListener("click", () => {
-      loadPage(`../pages/posts/editPost.js?id=${postId}`);
+      loadPage("../pages/posts/editPost.js", { id: postId });
     });
   }
 
@@ -185,7 +186,7 @@ function setupPage(postId) {
       document.getElementById("post-delete-popup").classList.remove("hidden");
     });
   }
-  setupConfirmPopup("post-delete-popup", () => doDeletePost(postId));
+  setupConfirmPopup("post-delete-popup", () => deletePost(postId));
 
   // 좋아요
   const likePostBtn = document.getElementById("like-post-btn");
@@ -232,11 +233,11 @@ function setupPage(postId) {
   }
 
   // 댓글 삭제 모달
-  setupConfirmPopup("comment-delete-popup", () => doDeleteComment());
+  setupConfirmPopup("comment-delete-popup", () => deleteComment());
 }
 
 /** 게시글 삭제 */
-function doDeletePost(postId) {
+function deletePost(postId) {
   let posts = JSON.parse(localStorage.getItem("posts")) || [];
   const idx = posts.findIndex((p) => String(p.id) === String(postId));
   if (idx !== -1) {
@@ -248,7 +249,7 @@ function doDeletePost(postId) {
 }
 
 /** 댓글 삭제 */
-function doDeleteComment() {
+function deleteComment() {
   if (!commentToDelete) return;
   let comments = JSON.parse(localStorage.getItem("comments")) || [];
   comments = comments.filter((c) => c.id !== commentToDelete);
@@ -439,18 +440,6 @@ async function loadStyles() {
     link3.href = "components/ValidationButton/ValidationButton.css";
     document.head.appendChild(link3);
   }
-}
-
-/** 로컬 스토리지에서 posts.json 읽기 */
-async function getPostData(postId) {
-  let posts = JSON.parse(localStorage.getItem("posts"));
-  if (!posts) {
-    const response = await fetch("../../data/posts.json");
-    const data = await response.json();
-    posts = data.posts;
-    localStorage.setItem("posts", JSON.stringify(posts));
-  }
-  return posts.find((p) => String(p.id) === String(postId)) || null;
 }
 
 /** 로컬 스토리지에서 comments.json 읽기 */

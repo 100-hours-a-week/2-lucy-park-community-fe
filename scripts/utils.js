@@ -15,4 +15,16 @@ export function truncateText(text, maxLength) {
     if (count >= 1000) return `${Math.floor(count / 1000)}k`;
     return count;
   }
+
+  /** 로컬 스토리지에서 posts.json 읽기 */
+export async function getPostData(postId) {
+  let posts = JSON.parse(localStorage.getItem("posts"));
+  if (!posts) {
+    const response = await fetch("../../data/posts.json");
+    const data = await response.json();
+    posts = data.posts;
+    localStorage.setItem("posts", JSON.stringify(posts));
+  }
+  return posts.find((p) => String(p.id) === String(postId)) || null;
+}
   
