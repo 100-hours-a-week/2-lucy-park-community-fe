@@ -1,6 +1,6 @@
 // signup.js
-import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js"; // ✅ 경로 수정
-import { loadPage } from "../../scripts/app.js"; // ✅ loadPage 추가
+import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js"; 
+import { loadPage } from "../../scripts/app.js"; 
 
 export function render() {
   return `

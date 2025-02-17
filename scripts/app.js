@@ -1,20 +1,26 @@
 // scripts/app.js
+import { renderHeader, setupHeader } from "../components/Header/Header.js";
 
-import * as Header from "../components/Header/Header.js";
-
-// 페이지 로드 시점에 헤더 렌더 + 기본 페이지(login.js) 로드
 document.addEventListener("DOMContentLoaded", () => {
-  // (선택) 헤더를 렌더링
-  document.getElementById("header-container").innerHTML = Header.render();
+  const appElement = document.getElementById("app");
+  
+  if (!appElement) {
+    console.error("🚨 'app' 요소를 찾을 수 없습니다!");
+    return;
+  }
 
-  // 🔥 로그인 상태 확인 후 시작 페이지 결정
+  appElement.innerHTML = renderHeader();
+  setupHeader();
+
+  // 🔥 로그인 상태 확인 후 페이지 결정
   const storedUser = JSON.parse(localStorage.getItem("user"));
   if (storedUser && storedUser.userStatus) {
-    loadPage("../pages/posts/posts.js"); // ✅ 로그인된 경우 게시판으로 이동
+    loadPage("../pages/posts/posts.js");
   } else {
-    loadPage("../pages/auth/login.js"); // ✅ 비로그인 상태면 로그인 화면
+    loadPage("../pages/auth/login.js");
   }
 });
+
 
 /** ✅ loadPage 수정: params를 추가하여 데이터 전달 */
 export function loadPage(pageScript, params = {}) {
