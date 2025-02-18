@@ -27,10 +27,10 @@ export function setup() {
     
     const button = document.getElementById("make-post-btn");
     if (!button) {
-      console.error("❌ make-post-btn 버튼을 찾을 수 없습니다.");
+      console.error("make-post-btn 버튼을 찾을 수 없습니다.");
       return;
     }
-    console.log("✅ make-post-btn 버튼 찾음. 클릭 이벤트 추가 중...");
+    //console.log(" make-post-btn 버튼 찾음. 클릭 이벤트 추가 중...");
     button.addEventListener("click", () => {
       console.log("🔄 make-post-btn 클릭됨! 페이지 이동 실행...");
       loadPage("../pages/posts/makePost.js");
@@ -96,5 +96,5 @@ async function loadPosts() {
   }
 }
 
-// 📌 무한 스크롤 (JSON 데이터에서는 추가 로딩 없이 전체 표시)
+// 무한 스크롤 (JSON 데이터에서는 추가 로딩 없이 전체 표시)
 function handleInfiniteScroll() {}

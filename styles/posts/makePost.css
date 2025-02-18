@@ -1,22 +1,24 @@
 /* 게시글 작성 페이지 스타일 */
 .make-post-container {
-    max-width: 1000px;
+    display: block;
+    width: 500px;
     margin: 40px auto;
-    padding: 20px;
+    padding: 30px 40px;
     background-color: #ffffff;
     border-radius: 8px;
-}
-
-.make-post-title {
+    box-sizing: border-box;
+  }
+  
+  .make-post-title {
     text-align: center;
-    font-size: 24px;
+    font-size: 28px;
     margin-bottom: 20px;
-}
-
-.back-button {
+  }
+  
+  .back-button {
     position: fixed;
     top: 15px;
-    left: 350px;
+    left: 500px;
     z-index: 1000;
     background: rgba(255, 255, 255, 0.8);
     border: 1px solid #ddd;
@@ -24,80 +26,83 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-}
-
-label {
+  }
+  
+  label {
     font-weight: bold;
     display: block;
     margin-top: 10px;
-}
-
-.required {
+  }
+  
+  .required {
     color: red;
-}
-
-input[type="text"], textarea {
+  }
+  
+  input[type="text"],
+  textarea {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 16px;
     margin-top: 5px;
-}
-
-textarea {
-    height: 150px;
-    resize: none;
-}
-
-.image-upload-section {
+    box-sizing: border-box;
+  }
+  
+  textarea {
+    height: 200px;
+    resize: vertical;
+  }
+  
+  .image-upload-section {
     margin-top: 15px;
-}
-
-#current-image {
+  }
+  
+  #current-image {
     margin-bottom: 10px;
     font-size: 14px;
     color: #666;
-}
-
-#select-file-btn {
+  }
+  
+  #select-file-btn {
     background-color: #ddd;
-    padding: 6px 12px;
+    padding: 8px 14px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-}
-
-#select-file-btn:hover {
+  }
+  
+  #select-file-btn:hover {
     background-color: #ccc;
-}
-
-.submit-btn {
+  }
+  
+  .submit-btn {
     width: 100%;
     margin-top: 20px;
-    padding: 10px;
+    padding: 12px;
     background-color: #ACA0EB;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
-}
-
-.submit-btn.active {
+  }
+  
+  .submit-btn.active {
     background-color: #7F6AEE;
-}
-
-.submit-btn:hover {
+  }
+  
+  .submit-btn:hover {
     opacity: 0.9;
-}
-
-.helper-text {
+  }
+  
+  .helper-text {
     color: red;
     font-size: 0.9rem;
     margin-top: 5px;
-}
-
-.hidden {
+  }
+  
+  .hidden {
     display: none;
-}
+  }
+  
