@@ -56,7 +56,7 @@ export function setupProfileButton() {
 
     // 로그아웃: 로컬 스토리지 초기화 후, alert 후 페이지 새로고침하여 깔끔하게 로그아웃 처리
     logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("user");
+        localStorage.removeItem("user"); 
         alert("로그아웃 되었습니다.");
         location.reload();
     });

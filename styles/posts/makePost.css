@@ -20,13 +20,32 @@
     top: 15px;
     left: 500px;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid #ddd;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
+    background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #444;
+  transition: color 0.3s;
   }
+
+  /* 뒤로가기 버튼 스타일 */
+#back-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #444;
+  transition: color 0.3s;
+}
+
+#back-btn:hover {
+  color: #222;
+}
   
   label {
     font-weight: bold;

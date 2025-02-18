@@ -9,15 +9,15 @@
 
 .back-button {
   position: fixed;
-  top: 25px;
+  top: 15px;
   left: 500px;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid #ddd;
-  padding: 8px 12px;
-  border-radius: 4px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
   cursor: pointer;
-  font-size: 16px;
+  color: #444;
+  transition: color 0.3s;
 }
 
 /* 게시글 제목 */

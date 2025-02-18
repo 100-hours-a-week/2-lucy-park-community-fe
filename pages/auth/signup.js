@@ -84,7 +84,7 @@ function setupEventListeners() {
   document.getElementById("signup-form").addEventListener("input", validateForm);
   document.getElementById("signup-form").addEventListener("submit", handleSignup);
 
-  // 📌 프로필 사진 업로드 이벤트 수정
+  // 프로필 사진 업로드 이벤트 수정
   const profilePicInput = document.getElementById("profile-pic");
   const profilePicPreview = document.getElementById("profile-pic-preview");
 
@@ -107,7 +107,7 @@ function setupEventListeners() {
   });
 }
 
-// ✅ 유효성 검사 함수
+// 유효성 검사 함수
 function validateForm() {
   const emailValid = validateEmail();
   const passwordValid = validatePassword();
@@ -150,7 +150,7 @@ function validateNickname() {
   return isValid;
 }
 
-// ✅ 회원가입 처리 함수 (로컬 스토리지 저장)
+// 회원가입 처리 함수 (로컬 스토리지 저장)
 function handleSignup(event) {
   event.preventDefault();
 
