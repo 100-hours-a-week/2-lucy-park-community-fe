@@ -6,7 +6,7 @@ export function render() {
   return `
     <section class="signup-container">
       <div class="back-button">
-        ${BackButton("pages/auth/login.js")}
+        ${BackButton("../pages/auth/login.js")}
       </div>
       <h2>회원가입</h2>
       <form id="signup-form">
@@ -107,7 +107,7 @@ function setupEventListeners() {
   });
 }
 
-// 📌 유효성 검사 함수
+// ✅ 유효성 검사 함수
 function validateForm() {
   const emailValid = validateEmail();
   const passwordValid = validatePassword();
@@ -150,32 +150,40 @@ function validateNickname() {
   return isValid;
 }
 
+// ✅ 회원가입 처리 함수 (로컬 스토리지 저장)
 function handleSignup(event) {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const nickname = document.getElementById("nickname").value.trim();
-    const profilePicInput = document.getElementById("profile-pic").files[0];
-    const userStatus = false;
-  
-    if (!validateConfirmPassword()) {
-      alert("비밀번호가 일치하지 않습니다.");
-      return;
-    }
-  
-    let profilePic = "";
-    if (profilePicInput) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        profilePic = e.target.result;
-  
-        const userData = { email, password, nickname, profilePic, userStatus };
-        localStorage.setItem("user", JSON.stringify(userData));
-  
-        alert("회원가입 성공!");
-        loadPage("../pages/auth/login.js");
-      };
-      reader.readAsDataURL(profilePicInput);
-    } else {
-        alert("회원 가입에 실패하였습니다. 다시 시도해주세요.")
-    }
+  event.preventDefault();
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const nickname = document.getElementById("nickname").value.trim();
+  const profilePicInput = document.getElementById("profile-pic").files[0];
+  const userStatus = false;
+
+  if (!validateConfirmPassword()) {
+    alert("비밀번호가 일치하지 않습니다.");
+    return;
+  }
+
+  let profilePic = "../../assets/default-profile.png"; // 기본 이미지
+
+  if (profilePicInput) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      profilePic = e.target.result;
+
+      const userData = { email, password, nickname, profilePic, userStatus };
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      alert("회원가입 성공!");
+      loadPage("../pages/auth/login.js");
+    };
+    reader.readAsDataURL(profilePicInput);
+  } else {
+    const userData = { email, password, nickname, profilePic, userStatus };
+    localStorage.setItem("user", JSON.stringify(userData));
+
+    alert("회원가입 성공!");
+    loadPage("../pages/auth/login.js");
+  }
 }

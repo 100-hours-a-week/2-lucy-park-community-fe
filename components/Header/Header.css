@@ -19,7 +19,15 @@
 /* 프로필 버튼 컨테이너 스타일 */
 .profile-btn {
     position: absolute;
-    left: 220px; 
+    left: 700px; 
     top: 50%;
     transform: translateY(-50%); /* 수직 중앙 정렬 */
+}
+
+hr {
+    width: 100vw; /* 뷰포트 전체 너비 사용 */
+    max-width: 100%; /* 부모 요소를 벗어나지 않도록 */
+    border: none;
+    border-top: 1px solid black;
+    margin: 0;
 }

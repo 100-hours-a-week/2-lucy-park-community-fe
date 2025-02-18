@@ -9,7 +9,9 @@ export function renderHeader() {
             <div class="profile-btn">
                 ${renderProfileLogoButton()}
             </div>
+            
         </header>
+        <hr/>
     `;
 }
 
