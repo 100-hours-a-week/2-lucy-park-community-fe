@@ -2,7 +2,7 @@
     display: flex;
     justify-content: space-between; /* 양 끝으로 정렬 */
     align-items: center;
-    padding: 10px 50px;
+    padding: 20px 50px;
     background: #ffffff;
     border-bottom: 1px solid #ddd;
     position: relative; /* 자식 요소의 절대 위치 기준 */
