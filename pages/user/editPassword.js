@@ -8,10 +8,6 @@ import { BackButton, setupBackButton } from "../../components/BackButton/BackBut
 export function render() {
   return `
     <section class="edit-password-container">
-      <!-- 뒤로가기 버튼 (옵션) -->
-      <div class="back-button">
-        ${BackButton("../pages/user/editProfile.js")}
-      </div>
 
       <h2>비밀번호 수정</h2>
       
