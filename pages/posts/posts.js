@@ -30,7 +30,7 @@ export function setup() {
       console.error("make-post-btn 버튼을 찾을 수 없습니다.");
       return;
     }
-    //console.log(" make-post-btn 버튼 찾음. 클릭 이벤트 추가 중...");
+
     button.addEventListener("click", () => {
       console.log("🔄 make-post-btn 클릭됨! 페이지 이동 실행...");
       loadPage("../pages/posts/makePost.js");
@@ -57,44 +57,57 @@ function setupEventListeners() {
   window.addEventListener("scroll", handleInfiniteScroll);
 }
 
+/**
+ * 서버에서 게시글 불러오기
+ */
 async function loadPosts() {
   const postList = document.getElementById("post-list");
   const loading = document.getElementById("loading");
   loading.classList.remove("hidden");
 
   try {
-    const response = await fetch("../../data/posts.json");
+    const response = await fetch("https://example.com/api/posts", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      }
+    });
+
     if (!response.ok) {
-      throw new Error(`Failed to load JSON: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to load posts: ${response.status} ${response.statusText}`);
     }
 
-    const { posts } = await response.json();
-    localStorage.setItem("posts", JSON.stringify(posts)); // 게시글 데이터를 로컬 스토리지에 저장
+    const { message, data: posts } = await response.json();
+    if (message !== "get_posts_success") {
+      throw new Error("Unexpected response from server");
+    }
+
+    localStorage.setItem("posts", JSON.stringify(posts));
 
     posts.forEach(post => {
       const li = document.createElement("li");
       li.classList.add("post-card");
-      li.dataset.postId = post.id;
+      li.dataset.postId = post.postId;
       li.innerHTML = `
         <h3 class="post-title">${truncateText(post.title, 26)}</h3>
         <p class="post-meta">
           좋아요 ${formatCount(post.likes)} · 댓글 ${formatCount(post.comments)} · 조회수 ${formatCount(post.views)}
-          <span class="post-date">${formatDate(post.createdAt)}</span>
+          <span class="post-date">${formatDate(post.date)}</span>
         </p>
         <div class="post-author">
-          <img src="${post.author.profilePic || 'default-profile.png'}" class="profile-pic"> 
-          <span>${post.author.name}</span>
+          <span>${post.author}</span>
         </div>
       `;
-      li.addEventListener("click", () => loadPage("../pages/posts/post.js", { id: post.id }));
+      li.addEventListener("click", () => loadPage("../pages/posts/post.js", { id: post.postId }));
       postList.appendChild(li);
     });
   } catch (error) {
-    console.error("게시글 로딩 오류:", error);
+    console.error("⛔ 게시글 로딩 오류:", error);
+    alert("게시글을 불러오는 데 실패했습니다. 다시 시도해주세요.");
   } finally {
     loading.classList.add("hidden");
   }
 }
 
-// 무한 스크롤 (JSON 데이터에서는 추가 로딩 없이 전체 표시)
+// 무한 스크롤 (추후 API 페이징 기능 추가 가능)
 function handleInfiniteScroll() {}

@@ -1,4 +1,3 @@
-// components/ProfileLogoButton/ProfileLogoButton.js
 import { loadPage } from "../../scripts/app.js";
 
 export function renderProfileLogoButton() {
@@ -11,8 +10,8 @@ export function renderProfileLogoButton() {
             </button>
             <div id="profile-menu" class="hidden">
                 <ul>
-                    <li id="edit-profile">회원정보수정</li>
-                    <li id="change-password">비밀번호수정</li>
+                    <li id="edit-profile">회원정보 수정</li>
+                    <li id="change-password">비밀번호 수정</li>
                     <li id="logout">로그아웃</li>
                 </ul>
             </div>
@@ -54,14 +53,68 @@ export function setupProfileButton() {
         loadPage("../pages/user/editPassword.js");
     });
 
-    // 로그아웃: 로컬 스토리지 초기화 후, alert 후 페이지 새로고침하여 깔끔하게 로그아웃 처리
-    logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("user"); 
-        alert("로그아웃 되었습니다.");
-        location.reload();
+    // 로그아웃 처리
+    logoutBtn.addEventListener("click", async () => {
+        await logoutUser();
     });
 }
 
+/**
+ * 서버에 로그아웃 요청 (Access Token & Refresh Token 삭제)
+ */
+async function logoutUser() {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken) {
+        alert("이미 로그아웃되었습니다.");
+        loadPage("../pages/auth/login.js");
+        return;
+    }
+
+    try {
+        const response = await fetch("https://example.com/users/logout", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json;charset=UTF-8",
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
+
+        if (response.status === 200) {
+            console.log("✅ 로그아웃 성공");
+            handleLogout();
+        } else if (response.status === 400) {
+            const errorData = await response.json();
+            console.error("⛔ 잘못된 Access Token:", errorData.error);
+            alert("잘못된 접근입니다. 다시 로그인해주세요.");
+            handleLogout();
+        } else if (response.status === 403) {
+            console.error("⛔ Access Token 만료");
+            alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+            handleLogout();
+        } else {
+            console.error("⛔ 서버 오류 발생");
+            alert("로그아웃에 실패했습니다. 다시 시도해주세요.");
+        }
+    } catch (error) {
+        console.error("⛔ 네트워크 오류:", error);
+        alert("네트워크 오류가 발생했습니다.");
+    }
+}
+
+/**
+ * 로그아웃 처리 (로컬 스토리지 정리 및 로그인 페이지 이동)
+ */
+function handleLogout() {
+    localStorage.removeItem("user");
+    localStorage.removeItem("accessToken");
+    alert("로그아웃 되었습니다.");
+    loadPage("../pages/auth/login.js");
+}
+
+/**
+ * CSS 동적 로드
+ */
 function loadProfileStyles() {
     if (!document.getElementById("profile-css")) {
         const link = document.createElement("link");

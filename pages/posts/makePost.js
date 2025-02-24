@@ -1,21 +1,11 @@
-// pages/posts/makePost.js
 import { loadPage } from "../../scripts/app.js";
 import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { ValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 
 /** 게시글 작성 페이지 초기화 */
 export async function init() {
-  // CSS 로드
   await loadStyles();
-
-  // HTML 렌더링
   const html = await render();
-
-  // DOM에 HTML 삽입 후 이벤트 등록 (setTimeout 없이도 가능)
-  // 아래와 같은 식으로도 가능:
-  // document.getElementById("content").innerHTML = html;
-  // setupBackButton(...);
-  // setupForm();
 
   setTimeout(() => {
     setupBackButton("../pages/posts/posts.js", "make-post-back-btn");
@@ -34,42 +24,21 @@ export async function render() {
     <section class="make-post-container">
       <h1 class="make-post-title">게시글 작성</h1>
       <form id="make-post-form">
-        <!-- 제목 입력 -->
         <label for="title">제목 <span class="required">*</span></label>
-        <input 
-          type="text" 
-          id="title" 
-          maxlength="26" 
-          placeholder="제목을 입력해주세요. (최대 26자)" 
-          required 
-        />
-        <p id="title-helper" class="helper-text hidden">
-          * 제목은 최대 26자까지 가능합니다.
-        </p>
+        <input type="text" id="title" maxlength="26" placeholder="제목을 입력해주세요. (최대 26자)" required />
+        <p id="title-helper" class="helper-text hidden">* 제목은 최대 26자까지 가능합니다.</p>
 
-        <!-- 내용 입력 -->
         <label for="content">내용 <span class="required">*</span></label>
-        <textarea 
-          id="content" 
-          placeholder="내용을 입력하세요." 
-          required
-        ></textarea>
+        <textarea id="content" placeholder="내용을 입력하세요." required></textarea>
 
-        <!-- 이미지 업로드 -->
         <div class="image-upload-section">
           <label>이미지</label>
           <div id="current-image">파일 없음</div>
           <input type="file" id="image-upload" accept="image/*" hidden />
           <button type="button" id="select-file-btn">파일 선택</button>
-          <p id="image-helper" class="helper-text hidden">
-            * 이미지 파일은 1개만 업로드 가능합니다.
-          </p>
         </div>
 
-        <!-- 등록 버튼 -->
-        <button type="submit" id="submit-post-btn" class="submit-btn">
-          등록
-        </button>
+        <button type="submit" id="submit-post-btn" class="submit-btn">등록</button>
       </form>
     </section>
   `;
@@ -77,7 +46,6 @@ export async function render() {
 
 /** 폼 데이터 설정 및 이벤트 등록 */
 function setupForm() {
-  // 뒤로가기 버튼
   document.getElementById("make-post-back-button")?.addEventListener("click", () => {
     loadPage("../pages/posts/posts.js");
   });
@@ -89,17 +57,13 @@ function setupForm() {
   const currentImageDiv = document.getElementById("current-image");
   const submitBtn = document.getElementById("submit-post-btn");
 
-  // 유효성 검사 버튼 생성
   const validationBtn = new ValidationButton("submit-post-btn");
 
-  // 폼 유효성 검사
   function validateForm() {
     const title = titleInput.value.trim();
     const content = contentInput.value.trim();
     const isValid = title !== "" && content !== "";
-    // 버튼 색상 변경 (옵션)
     submitBtn.style.backgroundColor = isValid ? "#7F6AEE" : "#ACA0EB";
-    // ValidationButton 처리
     validationBtn.updateValidationState(isValid);
   }
 
@@ -117,8 +81,10 @@ function setupForm() {
   document.getElementById("make-post-form")?.addEventListener("submit", handleSubmitPost);
 }
 
-/** 게시글 등록 처리 */
-function handleSubmitPost(event) {
+/**
+ * 게시글 등록 처리 
+ */
+async function handleSubmitPost(event) {
   event.preventDefault();
 
   const title = document.getElementById("title").value.trim();
@@ -130,18 +96,86 @@ function handleSubmitPost(event) {
     return;
   }
 
-  let posts = JSON.parse(localStorage.getItem("posts")) || [];
-  const newPost = {
-    id: Date.now(),
-    title,
-    content,
-    image: file ? file.name : null
-  };
+  let imageUrl = null;
+  if (file) {
+    imageUrl = await uploadImage(file);
+    if (!imageUrl) {
+      alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+      return;
+    }
+  }
 
-  posts.push(newPost);
-  localStorage.setItem("posts", JSON.stringify(posts));
-  alert("게시글이 등록되었습니다.");
-  loadPage("../pages/posts/posts.js");
+  await createPost(title, content, imageUrl);
+}
+
+/**
+ * 이미지 업로드 (서버에 업로드 후 URL 반환)
+ */
+async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append("imageFile", file);
+  formData.append("type", "post");
+
+  try {
+    const response = await fetch("https://example.com/api/upload", {
+      method: "POST",
+      body: formData
+    });
+
+    if (response.status === 201) {
+      const data = await response.json();
+      console.log("✅ 이미지 업로드 성공:", data.imageUrl);
+      return data.imageUrl;
+    } else {
+      console.error("⛔ 이미지 업로드 실패:", response.status);
+      return null;
+    }
+  } catch (error) {
+    console.error("⛔ 네트워크 오류:", error);
+    return null;
+  }
+}
+
+/**
+ * 게시글 등록 (서버에 데이터 전송)
+ */
+async function createPost(title, content, imageUrl) {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    alert("로그인이 필요합니다.");
+    loadPage("../pages/auth/login.js");
+    return;
+  }
+
+  try {
+    const response = await fetch("https://example.com/api/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({ title, content, imageUrl })
+    });
+
+    if (response.status === 201) {
+      console.log("✅ 게시글 등록 성공");
+      alert("게시글이 등록되었습니다.");
+      loadPage("../pages/posts/posts.js");
+    } else if (response.status === 400) {
+      const errorData = await response.json();
+      console.error("⛔ 필수 항목 누락:", errorData.error);
+      alert(errorData.error);
+    } else if (response.status === 403) {
+      console.error("⛔ 권한 없음");
+      alert("게시글 작성 권한이 없습니다.");
+    } else {
+      console.error("⛔ 서버 오류 발생");
+      alert("게시글 등록에 실패했습니다. 다시 시도해주세요.");
+    }
+  } catch (error) {
+    console.error("⛔ 네트워크 오류:", error);
+    alert("네트워크 오류가 발생했습니다.");
+  }
 }
 
 /** CSS 로드 */
@@ -150,7 +184,6 @@ async function loadStyles() {
     const link = document.createElement("link");
     link.id = "make-post-css";
     link.rel = "stylesheet";
-    // 경로를 프로젝트 구조에 맞게 조정: 아래는 예시
     link.href = "../styles/posts/makePost.css";
     document.head.appendChild(link);
   }
