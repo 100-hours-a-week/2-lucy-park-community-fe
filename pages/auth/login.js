@@ -1,4 +1,3 @@
-// login.js
 import { loadPage } from "../../scripts/app.js"; 
 import { ValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 
@@ -56,12 +55,10 @@ function setupEventListeners() {
   const loginForm = document.getElementById("login-form");
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
-  const signupButton = document.getElementById("signup-btn"); // 회원가입 버튼
+  const signupButton = document.getElementById("signup-btn");
 
-  // ValidationButton
   const loginButton = new ValidationButton("login-btn");
 
-  // 이메일 & 비밀번호 검증
   usernameInput.addEventListener("input", () => {
     loginButton.updateValidationState(
       validateEmailField() && validatePasswordField()
@@ -77,7 +74,6 @@ function setupEventListeners() {
     loginForm.addEventListener("submit", handleLogin);
   }
 
-  // 회원가입 버튼 클릭 시 회원가입 페이지로 이동
   if (signupButton) {
     signupButton.addEventListener("click", () => {
       loadPage("/pages/auth/signup.js");
@@ -123,44 +119,53 @@ function validateEmail(email) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
 }
+
 function validatePassword(password) {
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
   return regex.test(password);
 }
 
+// 로그인 처리 함수 (실제 API 적용)
 async function handleLogin(event) {
   event.preventDefault();
-  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
 
   try {
-    const response = await fakeLoginAPI(username, password);
-    if (response.success) {
+    const response = await fetch("https://example.com/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: "include" // HttpOnly Secure 쿠키 저장
+    });
+
+    if (response.status === 200) {
+      const data = await response.json();
+      console.log("로그인 성공:", data);
+
+      // Access Token 저장
+      localStorage.setItem("accessToken", data.data.accessToken);
+      localStorage.setItem("expiresIn", data.data.expiresIn);
+      localStorage.setItem("nickname", data.data.nickname);
+      localStorage.setItem("profileImage", data.data.profileImage);
+
       alert("로그인 성공!");
-      location.reload();
       loadPage("../pages/posts/posts.js");
-    } else {
-      alert("아이디 또는 비밀번호를 확인해주세요.");
+    } else if (response.status === 400) {
+      const errorData = await response.json();
+      console.error("⛔ 필수 항목 누락:", errorData.error);
+      alert(errorData.error);
+    } else if (response.status === 403) {
+      console.error("⛔ 계정 정보 없음");
+      alert("이메일 또는 비밀번호가 올바르지 않습니다.");
+    } else if (response.status === 500) {
+      console.error("⛔ 서버 오류 발생");
+      alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
     }
   } catch (error) {
-    console.error("로그인 오류:", error);
+    console.error("⛔ 네트워크 오류:", error);
+    alert("네트워크 오류가 발생했습니다.");
   }
-}
-
-// 더미 API
-async function fakeLoginAPI(username, password) {
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        success: username === storedUser.email && password === storedUser.password
-      });
-      
-      // 로그인 성공 시 userStatus를 true로 설정
-      storedUser.userStatus = true;
-
-      // 변경된 storedUser를 다시 localStorage에 저장
-      localStorage.setItem("user", JSON.stringify(storedUser));
-    }, 300);
-  });
 }
