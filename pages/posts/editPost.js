@@ -1,6 +1,6 @@
 import { loadPage } from "../../scripts/app.js";
 import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
-import { ValidationButton } from "../../components/ValidationButton/ValidationButton.js";
+import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 
 let postId = null;
 let currentPost = null;
@@ -70,10 +70,9 @@ function setupForm() {
   const fileInput = document.getElementById("image-upload");
   const selectFileBtn = document.getElementById("select-file-btn");
   const currentImageDiv = document.getElementById("current-image");
-  const submitBtn = document.getElementById("update-post-btn");
 
-  const validationBtn = new ValidationButton("update-post-btn");
-  
+  const validationBtn = createValidationButton("update-post-btn");
+
   function validateForm() {
     validationBtn.updateValidationState(titleInput.value.trim() !== "" && contentInput.value.trim() !== "");
   }

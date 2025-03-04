@@ -1,5 +1,5 @@
 import { loadPage } from "../../scripts/app.js"; 
-import { ValidationButton } from "../../components/ValidationButton/ValidationButton.js";
+import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 
 export function render() {
   return `
@@ -57,7 +57,7 @@ function setupEventListeners() {
   const passwordInput = document.getElementById("password");
   const signupButton = document.getElementById("signup-btn");
 
-  const loginButton = new ValidationButton("login-btn");
+  const loginButton = createValidationButton("login-btn");
 
   usernameInput.addEventListener("input", () => {
     loginButton.updateValidationState(

@@ -1,35 +1,34 @@
 // components/ValidationButton/ValidationButton.js
-export class ValidationButton {
-    constructor(buttonId) {
-      this.button = document.getElementById(buttonId);
-      this.isValid = false;
-  
-      if (this.button) {
-        this.initializeButton();
-      }
-    }
-  
-    initializeButton() {
-      this.setDisabled(true);
-      this.button.classList.add("validation-button");
-    }
-  
-    setDisabled(disabled) {
-      this.button.disabled = disabled;
-      this.updateButtonStyle();
-    }
-  
-    updateButtonStyle() {
-      if (this.button.disabled) {
-        this.button.style.backgroundColor = "#ACA0EB";
-      } else {
-        this.button.style.backgroundColor = "#7F6AEE";
-      }
-    }
-  
-    updateValidationState(isValid) {
-      this.isValid = isValid;
-      this.setDisabled(!isValid);
-    }
+export function createValidationButton(buttonId) {
+  const button = document.getElementById(buttonId);
+  let isValid = false;
+
+  if (!button) return null;
+
+  function setDisabled(disabled) {
+    button.disabled = disabled;
+    updateButtonStyle();
   }
-  
+
+  function updateButtonStyle() {
+    button.style.backgroundColor = button.disabled ? "#ACA0EB" : "#7F6AEE";
+  }
+
+  function updateValidationState(valid) {
+    isValid = valid;
+    setDisabled(!valid);
+  }
+
+  // 초기화 로직
+  function initializeButton() {
+    setDisabled(true);
+    button.classList.add("validation-button");
+  }
+
+  initializeButton();
+
+  return {
+    updateValidationState,
+    setDisabled,
+  };
+}

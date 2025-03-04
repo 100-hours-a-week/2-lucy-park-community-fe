@@ -1,7 +1,7 @@
 import { loadPage } from "../../scripts/app.js";
 import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { ConfirmPopup, setupConfirmPopup } from "../../components/ConfirmPopup/ConfirmPopup.js";
-import { ValidationButton } from "../../components/ValidationButton/ValidationButton.js";
+import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 import { formatCount, formatDate } from "../../scripts/utils.js";
 
 let commentToDelete = null;
@@ -54,6 +54,7 @@ export async function init(params) {
 
   setTimeout(() => {
     setupBackButton("../pages/posts/posts.js", "post-back-btn");
+    setupCommentValidation();
   }, 0);
 
   return render(post, comments);
@@ -97,7 +98,7 @@ function renderComments(comments) {
   return `
     <div class="comments-container">
       <textarea class="comment-input" placeholder="댓글을 입력하세요"></textarea>
-      <button id="comment-submit-btn" class="comment-submit-btn">등록</button>
+      <button id="comment-submit-btn" class="comment-submit-btn" disabled>등록</button>
       ${comments
         .map(
           (comment) => `
@@ -115,6 +116,16 @@ function renderComments(comments) {
         .join("")}
     </div>
   `;
+}
+
+/** 댓글 입력 유효성 검사 설정 */
+function setupCommentValidation() {
+  const commentInput = document.querySelector(".comment-input");
+  const submitButton = createValidationButton("comment-submit-btn");
+
+  commentInput.addEventListener("input", () => {
+    submitButton.updateValidationState(commentInput.value.trim() !== "");
+  });
 }
 
 /** 페이지 이벤트 설정 */
@@ -169,50 +180,6 @@ async function deletePost(postId) {
   }
 }
 
-/** 댓글 추가 요청 */
-async function addComment(postId) {
-  const accessToken = localStorage.getItem("accessToken");
-  const content = document.querySelector(".comment-input").value.trim();
-  if (!content) return alert("댓글을 입력해주세요!");
-
-  try {
-    const response = await fetch(`https://example.com/api/posts/${postId}/comments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
-      body: JSON.stringify({ content }),
-    });
-
-    if (response.status === 201) {
-      alert("댓글이 등록되었습니다.");
-      loadPage(`../pages/posts/post.js?id=${postId}`);
-    }
-  } catch (error) {
-    console.error("⛔ 댓글 등록 오류:", error);
-  }
-}
-
-/** 댓글 수정 요청 */
-async function updateComment(commentId, postId) {
-  const accessToken = localStorage.getItem("accessToken");
-  const content = document.querySelector(".comment-input").value.trim();
-  if (!content) return alert("댓글을 입력해주세요!");
-
-  try {
-    const response = await fetch(`https://example.com/api/comments/${commentId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
-      body: JSON.stringify({ content }),
-    });
-
-    if (response.status === 200) {
-      alert("댓글이 수정되었습니다.");
-      loadPage(`../pages/posts/post.js?id=${postId}`);
-    }
-  } catch (error) {
-    console.error("⛔ 댓글 수정 오류:", error);
-  }
-}
-
 /** 댓글 삭제 요청 */
 async function deleteComment() {
   const accessToken = localStorage.getItem("accessToken");
@@ -228,5 +195,16 @@ async function deleteComment() {
     }
   } catch (error) {
     console.error("⛔ 댓글 삭제 오류:", error);
+  }
+}
+
+/** CSS 로드 */
+async function loadStyles() {
+  if (!document.getElementById("post-css")) {
+    const link = document.createElement("link");
+    link.id = "post-css";
+    link.rel = "stylesheet";
+    link.href = "../styles/posts/post.css";
+    document.head.appendChild(link);
   }
 }

@@ -1,6 +1,6 @@
 import { loadPage } from "../../scripts/app.js";
 import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
-import { ValidationButton } from "../../components/ValidationButton/ValidationButton.js";
+import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 
 /** 게시글 작성 페이지 초기화 */
 export async function init() {
@@ -55,15 +55,13 @@ function setupForm() {
   const fileInput = document.getElementById("image-upload");
   const selectFileBtn = document.getElementById("select-file-btn");
   const currentImageDiv = document.getElementById("current-image");
-  const submitBtn = document.getElementById("submit-post-btn");
 
-  const validationBtn = new ValidationButton("submit-post-btn");
+  const validationBtn = createValidationButton("submit-post-btn");
 
   function validateForm() {
     const title = titleInput.value.trim();
     const content = contentInput.value.trim();
     const isValid = title !== "" && content !== "";
-    submitBtn.style.backgroundColor = isValid ? "#7F6AEE" : "#ACA0EB";
     validationBtn.updateValidationState(isValid);
   }
 
