@@ -84,29 +84,40 @@ async function loadPosts() {
 
     localStorage.setItem("posts", JSON.stringify(posts));
 
-    posts.forEach(post => {
-      const li = document.createElement("li");
-      li.classList.add("post-card");
-      li.dataset.postId = post.postId;
-      li.innerHTML = `
-        <h3 class="post-title">${truncateText(post.title, 26)}</h3>
-        <p class="post-meta">
-          좋아요 ${formatCount(post.likes)} · 댓글 ${formatCount(post.comments)} · 조회수 ${formatCount(post.views)}
-          <span class="post-date">${formatDate(post.date)}</span>
-        </p>
-        <div class="post-author">
-          <span>${post.author}</span>
-        </div>
-      `;
-      li.addEventListener("click", () => loadPage("../pages/posts/post.js", { id: post.postId }));
-      postList.appendChild(li);
+    postList.innerHTML = posts.map(post => createPostCard(post)).join("");
+    
+    // 클릭 이벤트 부착
+    document.querySelectorAll(".post-card").forEach(card => {
+      card.addEventListener("click", (event) => {
+        const postId = event.currentTarget.dataset.postId;
+        loadPage("../pages/posts/post.js", { id: postId });
+      });
     });
+
   } catch (error) {
     console.error("⛔ 게시글 로딩 오류:", error);
     alert("게시글을 불러오는 데 실패했습니다. 다시 시도해주세요.");
   } finally {
     loading.classList.add("hidden");
   }
+}
+
+/**
+ *  PostCard 컴포넌트 - 게시글 카드 생성
+ */
+function createPostCard(post) {
+  return `
+    <li class="post-card" data-post-id="${post.postId}">
+      <h3 class="post-title">${truncateText(post.title, 26)}</h3>
+      <p class="post-meta">
+        좋아요 ${formatCount(post.likes)} · 댓글 ${formatCount(post.comments)} · 조회수 ${formatCount(post.views)}
+        <span class="post-date">${formatDate(post.date)}</span>
+      </p>
+      <div class="post-author">
+        <span>${post.author}</span>
+      </div>
+    </li>
+  `;
 }
 
 // 무한 스크롤 (추후 API 페이징 기능 추가 가능)
