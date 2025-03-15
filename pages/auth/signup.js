@@ -1,31 +1,7 @@
 import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { loadPage } from "../../scripts/app.js";
-
-// 이미지 업로드 함수
-async function uploadImage(file) {
-    const formData = new FormData();
-    formData.append("imageFile", file);
-    formData.append("type", "profile");
-
-    try {
-        const response = await fetch("https://example.com/api/upload", {
-            method: "POST",
-            body: formData
-        });
-
-        if (response.status === 201) {
-            const data = await response.json();
-            console.log("✅ 이미지 업로드 성공:", data.imageUrl);
-            return data.imageUrl;
-        } else {
-            const errorData = await response.json();
-            console.error("⛔ 이미지 업로드 실패:", errorData);
-        }
-    } catch (error) {
-        console.error("⛔ 네트워크 오류:", error);
-    }
-    return null;
-}
+import { uploadImage } from "../../scripts/utils.js"; 
+import { API_BASE_URL } from "../../config.js";
 
 // 회원가입 요청 함수
 async function registerUser(email, password, nickname, imageUrl = null) {
@@ -33,7 +9,7 @@ async function registerUser(email, password, nickname, imageUrl = null) {
     if (imageUrl) requestBody.imageUrl = imageUrl;
 
     try {
-        const response = await fetch("https://example.com/users/signup", {
+        const response = await fetch(`${API_BASE_URL}/users`, {
             method: "POST",
             headers: { "Content-Type": "application/json;charset=UTF-8" },
             body: JSON.stringify(requestBody)
@@ -181,12 +157,16 @@ async function handleSignup(event) {
     let imageUrl = null;
 
     if (profilePicInput) {
-        imageUrl = await uploadImage(profilePicInput);
-        if (!imageUrl) {
+        const uploadResponse = await uploadImage(profilePicInput);
+        console.log(uploadResponse);
+    
+        if (!uploadResponse || uploadResponse.message !== "upload_success") {
             alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
             return;
         }
-    }
+    
+        imageUrl = uploadResponse.imageUrl;
 
-    await registerUser(email, password, nickname, imageUrl);
+        await registerUser(email, password, nickname, imageUrl);  
+    }    
 }

@@ -1,6 +1,7 @@
 import { loadPage } from "../../scripts/app.js";
 import { HoverButton, setupHoverButton } from "../../components/HoverButton/HoverButton.js";
 import { truncateText, formatDate, formatCount } from "../../scripts/utils.js"; 
+import { API_BASE_URL } from "../../config.js";
 
 export function render() {
   return `
@@ -66,10 +67,10 @@ async function loadPosts() {
   loading.classList.remove("hidden");
 
   try {
-    const response = await fetch("https://example.com/api/posts", {
+    const response = await fetch(`${API_BASE_URL}/posts`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json;charset=UTF-8"
+        "Content-Type": "application/json"
       }
     });
 
@@ -81,8 +82,6 @@ async function loadPosts() {
     if (message !== "get_posts_success") {
       throw new Error("Unexpected response from server");
     }
-
-    localStorage.setItem("posts", JSON.stringify(posts));
 
     postList.innerHTML = posts.map(post => createPostCard(post)).join("");
     
@@ -104,17 +103,18 @@ async function loadPosts() {
 
 /**
  *  PostCard 컴포넌트 - 게시글 카드 생성
+ *  추가 확장이 예상되지 않아 별도의 컴포넌트로 분리하지는 않았습니다
  */
 function createPostCard(post) {
   return `
-    <li class="post-card" data-post-id="${post.postId}">
+    <li class="post-card" data-post-id="${post.id}">
       <h3 class="post-title">${truncateText(post.title, 26)}</h3>
       <p class="post-meta">
-        좋아요 ${formatCount(post.likes)} · 댓글 ${formatCount(post.comments)} · 조회수 ${formatCount(post.views)}
-        <span class="post-date">${formatDate(post.date)}</span>
+        좋아요 ${formatCount(post.likes)} · 댓글 ${formatCount(Array.isArray(post.comments) ? post.comments.length : 0)} · 조회수 ${formatCount(post.views)}
+        <span class="post-date">${formatDate(post.createdAt)}</span>
       </p>
       <div class="post-author">
-        <span>${post.author}</span>
+        <span>${post.user.nickname}</span>
       </div>
     </li>
   `;

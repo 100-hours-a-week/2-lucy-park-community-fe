@@ -14,9 +14,9 @@ function initializeApp() {
   }
 
   // 로그인 상태 확인
-  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const storedUserToken = localStorage.getItem("accessToken");
 
-  if (storedUser && storedUser.userStatus) {
+  if (storedUserToken) {
     // 로그인된 상태: 헤더와 hr을 보이게 설정
     appElement.innerHTML = renderHeader();
     setupHeader();

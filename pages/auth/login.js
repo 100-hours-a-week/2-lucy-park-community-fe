@@ -1,5 +1,6 @@
 import { loadPage } from "../../scripts/app.js"; 
 import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
+import { API_BASE_URL } from "../../config.js";
 
 export function render() {
   return `
@@ -132,7 +133,7 @@ async function handleLogin(event) {
   const password = document.getElementById("password").value.trim();
 
   try {
-    const response = await fetch("https://example.com/users/login", {
+    const response = await fetch(`${API_BASE_URL}/users/session`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8"
@@ -145,11 +146,11 @@ async function handleLogin(event) {
       const data = await response.json();
       console.log("✅ 로그인 성공:", data);
 
-      // Access Token 저장
-      localStorage.setItem("accessToken", data.data.accessToken);
-      localStorage.setItem("expiresIn", data.data.expiresIn);
-      localStorage.setItem("nickname", data.data.nickname);
-      localStorage.setItem("profileImage", data.data.profileImage);
+      // Token 저장
+      localStorage.setItem("id", data.id);
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("nickname", data.nickname);
+      localStorage.setItem("profileImage", data.imageUrl);
 
       alert("로그인 성공!");
       loadPage("../pages/posts/posts.js");

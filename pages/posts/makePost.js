@@ -1,23 +1,27 @@
 import { loadPage } from "../../scripts/app.js";
 import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
+import { uploadImage } from "../../scripts/utils.js"; 
+import { API_BASE_URL } from "../../config.js";
+
+/** 게시글 입력 상태 저장 */
+let postData = {
+  title: "",
+  content: ""
+};
+let validationBtn; // 🔹 전역 변수 선언
 
 /** 게시글 작성 페이지 초기화 */
 export async function init() {
   await loadStyles();
-  const html = await render();
-
-  setTimeout(() => {
-    setupBackButton("../pages/posts/posts.js", "make-post-back-btn");
-    setupForm();
-  }, 0);
-
-  return html;
+  await render(); // ⬅️ HTML 렌더링을 기다린 후 setupForm 실행
+  setupBackButton("../pages/posts/posts.js", "make-post-back-btn");
+  setupForm();
 }
 
 /** HTML 렌더링 */
 export async function render() {
-  return `
+  document.body.innerHTML = `
     <div class="back-button">
       ${BackButton("../pages/posts/posts.js", "make-post-back-button")}
     </div>
@@ -46,97 +50,75 @@ export async function render() {
 
 /** 폼 데이터 설정 및 이벤트 등록 */
 function setupForm() {
-  document.getElementById("make-post-back-button")?.addEventListener("click", () => {
-    loadPage("../pages/posts/posts.js");
-  });
+  const form = document.getElementById("make-post-form");
+  if (!form) {
+    console.error("🚨 make-post-form 요소가 존재하지 않습니다.");
+    return;
+  }
 
   const titleInput = document.getElementById("title");
   const contentInput = document.getElementById("content");
-  const fileInput = document.getElementById("image-upload");
-  const selectFileBtn = document.getElementById("select-file-btn");
-  const currentImageDiv = document.getElementById("current-image");
 
-  const validationBtn = createValidationButton("submit-post-btn");
+  // 🔹 유효성 검사 버튼 생성
+  validationBtn = createValidationButton("submit-post-btn");
 
   function validateForm() {
-    const title = titleInput.value.trim();
-    const content = contentInput.value.trim();
-    const isValid = title !== "" && content !== "";
-    validationBtn.updateValidationState(isValid);
+    postData.title = titleInput.value.trim();
+    postData.content = contentInput.value.trim();
+    const isValid = postData.title !== "" && postData.content !== "";
+
+    if (validationBtn?.updateValidationState) {
+      validationBtn.updateValidationState(isValid);
+    }
   }
 
   titleInput.addEventListener("input", validateForm);
   contentInput.addEventListener("input", validateForm);
 
+  setupImageUpload();
+  form.addEventListener("submit", handleSubmitPost);
+}
+
+/** 이미지 업로드 처리 */
+function setupImageUpload() {
+  const fileInput = document.getElementById("image-upload");
+  const selectFileBtn = document.getElementById("select-file-btn");
+  const currentImageDiv = document.getElementById("current-image");
+
   selectFileBtn.addEventListener("click", () => fileInput.click());
   fileInput.addEventListener("change", (evt) => {
     const file = evt.target.files[0];
-    if (file) {
-      currentImageDiv.textContent = `선택된 파일: ${file.name}`;
-    }
+    currentImageDiv.textContent = file ? `선택된 파일: ${file.name}` : "파일 없음";
   });
-
-  document.getElementById("make-post-form")?.addEventListener("submit", handleSubmitPost);
 }
 
-/**
- * 게시글 등록 처리 
- */
+/** 게시글 등록 처리 */
 async function handleSubmitPost(event) {
   event.preventDefault();
 
-  const title = document.getElementById("title").value.trim();
-  const content = document.getElementById("content").value.trim();
   const file = document.getElementById("image-upload").files[0];
 
-  if (!title || !content) {
+  if (!postData.title || !postData.content) {
     alert("제목과 내용을 입력해주세요!");
     return;
   }
 
   let imageUrl = null;
   if (file) {
-    imageUrl = await uploadImage(file);
-    if (!imageUrl) {
+    let response = await uploadImage(file);
+    console.log(response);
+    if (!response.imageUrl) {
       alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
       return;
     }
+    imageUrl = response.imageUrl;
   }
 
-  await createPost(title, content, imageUrl);
+  console.log(postData.title, postData.content, imageUrl);
+  await createPost(postData.title, postData.content, imageUrl);
 }
 
-/**
- * 이미지 업로드 (서버에 업로드 후 URL 반환)
- */
-async function uploadImage(file) {
-  const formData = new FormData();
-  formData.append("imageFile", file);
-  formData.append("type", "post");
-
-  try {
-    const response = await fetch("https://example.com/api/upload", {
-      method: "POST",
-      body: formData
-    });
-
-    if (response.status === 201) {
-      const data = await response.json();
-      console.log("✅ 이미지 업로드 성공:", data.imageUrl);
-      return data.imageUrl;
-    } else {
-      console.error("⛔ 이미지 업로드 실패:", response.status);
-      return null;
-    }
-  } catch (error) {
-    console.error("⛔ 네트워크 오류:", error);
-    return null;
-  }
-}
-
-/**
- * 게시글 등록 (서버에 데이터 전송)
- */
+/** 게시글 등록 (서버에 데이터 전송) */
 async function createPost(title, content, imageUrl) {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
@@ -146,29 +128,21 @@ async function createPost(title, content, imageUrl) {
   }
 
   try {
-    const response = await fetch("https://example.com/api/posts", {
+    const response = await fetch(`${API_BASE_URL}/posts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
-        Authorization: `Bearer ${accessToken}`
+        Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ title, content, imageUrl })
+      body: JSON.stringify({ title, content, imageUrl }),
     });
 
-    if (response.status === 201) {
-      console.log("✅ 게시글 등록 성공");
-      alert("게시글이 등록되었습니다.");
+    if (response.ok) {
+      alert("✅ 게시글이 등록되었습니다.");
       loadPage("../pages/posts/posts.js");
-    } else if (response.status === 400) {
-      const errorData = await response.json();
-      console.error("⛔ 필수 항목 누락:", errorData.error);
-      alert(errorData.error);
-    } else if (response.status === 403) {
-      console.error("⛔ 권한 없음");
-      alert("게시글 작성 권한이 없습니다.");
     } else {
-      console.error("⛔ 서버 오류 발생");
-      alert("게시글 등록에 실패했습니다. 다시 시도해주세요.");
+      const errorData = await response.json();
+      alert(errorData.error || "게시글 등록에 실패했습니다. 다시 시도해주세요.");
     }
   } catch (error) {
     console.error("⛔ 네트워크 오류:", error);

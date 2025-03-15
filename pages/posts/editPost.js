@@ -1,6 +1,7 @@
 import { loadPage } from "../../scripts/app.js";
 import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
+import { API_BASE_URL } from "../../config.js";
 
 let postId = null;
 let currentPost = null;
@@ -139,8 +140,8 @@ async function uploadImage(file) {
   formData.append("type", "post");
 
   try {
-    const response = await fetch("https://example.com/api/upload", {
-      method: "POST",
+    const response = await fetch(`${API_BASE_URL}/posts/${postsId}`, {
+      method: "PATCH",
       body: formData
     });
 

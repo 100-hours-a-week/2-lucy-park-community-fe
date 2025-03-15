@@ -1,4 +1,5 @@
 // ✅ utils.js - 유틸 함수 모음
+import { API_BASE_URL } from "../../config.js";
 
 export function truncateText(text, maxLength) {
     return text.length > maxLength ? text.substring(0, maxLength) + "…" : text;
@@ -27,4 +28,28 @@ export async function getPostData(postId) {
   }
   return posts.find((p) => String(p.id) === String(postId)) || null;
 }
-  
+
+export async function uploadImage(file) {
+    const formData = new FormData();
+    formData.append("imageFile", file);
+    formData.append("type", "profile");
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/image`, {
+            method: "POST",
+            body: formData
+        });
+
+        if (response.status === 201) {
+            const data = await response.json();
+            console.log("✅ 이미지 업로드 성공:", data.imageUrl);
+            return data;
+        } else {
+            const errorData = await response.json();
+            console.error("⛔ 이미지 업로드 실패:", errorData);
+        }
+    } catch (error) {
+        console.error("⛔ 네트워크 오류:", error);
+    }
+    return null;
+}
