@@ -1,4 +1,5 @@
 import { loadPage } from "../../scripts/app.js";
+import { API_BASE_URL } from "../../config.js";
 
 export function renderProfileLogoButton() {
     loadProfileStyles();
@@ -20,8 +21,13 @@ export function renderProfileLogoButton() {
 }
 
 export function setupProfileButton() {
-    let user = JSON.parse(localStorage.getItem("user")) || {};
-    let profilePic = user.profilePic || "../../assets/default-profile.png";
+    const profileImage = localStorage.getItem("profileImage") || {};
+    
+    // user.profileImage 가 있으면 API_BASE_URL + profileImage 경로,
+    // 없으면 기본 프로필 이미지
+    const profilePic = profileImage
+        ? `${API_BASE_URL}${profileImage}`
+        : "../../assets/default-profile.png";
 
     const profileImg = document.getElementById("profile-img");
     const profileButton = document.getElementById("profile-button");
@@ -30,7 +36,9 @@ export function setupProfileButton() {
     const editPassword = document.getElementById("change-password");
     const logoutBtn = document.getElementById("logout");
 
-    if (profileImg) profileImg.src = profilePic;
+    if (profileImg) {
+        profileImg.src = profilePic;
+    }
 
     profileButton.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -72,7 +80,8 @@ async function logoutUser() {
     }
 
     try {
-        const response = await fetch("https://example.com/users/logout", {
+        // 실제 서버 주소로 변경
+        const response = await fetch(`${API_BASE_URL}/users/logout`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json;charset=UTF-8",

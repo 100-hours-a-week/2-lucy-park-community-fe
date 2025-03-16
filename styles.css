@@ -1,4 +1,8 @@
 /* 기본 스타일 초기화 */
+#app {
+    z-index: 9999;        /* 가장 앞에 오도록 */
+  }
+
 body {
     font-family: Arial, sans-serif;
     display: flex;

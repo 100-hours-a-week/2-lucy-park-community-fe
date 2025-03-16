@@ -143,14 +143,15 @@ async function handleLogin(event) {
     });
 
     if (response.status === 200) {
-      const data = await response.json();
-      console.log("✅ 로그인 성공:", data);
+      const res = await response.json();
+      console.log("✅ 로그인 성공:", res.data);
 
       // Token 저장
-      localStorage.setItem("id", data.id);
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("nickname", data.nickname);
-      localStorage.setItem("profileImage", data.imageUrl);
+      localStorage.setItem("id", res.data.id);
+      localStorage.setItem("email", res.data.email);
+      localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("nickname", res.data.nickname);
+      localStorage.setItem("profileImage", res.data.imageUrl);
 
       alert("로그인 성공!");
       loadPage("../pages/posts/posts.js");

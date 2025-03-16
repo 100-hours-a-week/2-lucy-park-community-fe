@@ -8,8 +8,8 @@ import { API_BASE_URL } from "../../config.js";
 let commentToDelete = null;
 let editCommentId = null;
 
-/** 현재 로그인한 사용자 정보 가져오기 */
-function getUser() {
+/** 현재 로그인한 사용자 ID 가져오기 */
+function getUserId() {
   return localStorage.getItem("id");
 }
 
@@ -65,9 +65,13 @@ export async function init(params) {
 export function render(post, comments) {
   if (!post) return `<section class="post-container"><h2>게시글을 찾을 수 없습니다.</h2></section>`;
 
+  // getUserId()를 사용해 로그인한 사용자 ID를 가져옴
+  const userId = getUserId();
+  const isPostAuthor = userId == post.user?.id; // 타입에 따라 느슨한 비교
+
   const commentsHTML = renderComments(comments);
 
-  setTimeout(() => setupPage(post.id), 0);
+  setTimeout(() => setupPage(post.id, isPostAuthor), 0);
 
   return `
     <section class="post-container">
@@ -81,10 +85,11 @@ export function render(post, comments) {
         <span class="date">${formatDate(post.createdAt)}</span>
       </div>
 
-      ${post.imageUrl ? `<img src="${post.imageUrl}" alt="게시글 이미지" class="post-image">` : ""}
+      ${post.imageUrl ? `<img src="${API_BASE_URL}${post.imageUrl}" alt="게시글 이미지" class="post-image">` : ""}
       <p class="post-content">${post.content}</p>
       <div class="post-actions">
-        <button id="delete-post-btn" class="delete-btn">삭제</button>
+        ${isPostAuthor ? `<button id="edit-post-btn" class="edit-btn">수정</button>` : ""}
+        ${isPostAuthor ? `<button id="delete-post-btn" class="delete-btn">삭제</button>` : ""}
       </div>
 
       ${commentsHTML}
@@ -97,7 +102,7 @@ export function render(post, comments) {
 
 /** 댓글 목록 렌더링 (본인만 수정/삭제 가능) */
 function renderComments(comments = []) {
-  const user = getUser(); // 현재 로그인한 사용자 정보
+  const userId = getUserId();
 
   return `
     <div class="comments-container">
@@ -115,7 +120,7 @@ function renderComments(comments = []) {
           </div>
           <p class="comment-content">${comment.content}</p>
           ${
-            user.id === comment.user.id
+            userId == comment.user.id
               ? `
             <button class="edit-comment-btn" data-id="${comment.id}">수정</button>
             <button class="delete-comment-btn" data-id="${comment.id}">삭제</button>
@@ -133,13 +138,17 @@ function renderComments(comments = []) {
 }
 
 /** 페이지 이벤트 설정 */
-function setupPage(postId) {
-  document.getElementById("delete-post-btn")?.addEventListener("click", () => {
-    document.getElementById("post-delete-popup").classList.remove("hidden");
-  });
-
-  setupConfirmPopup("post-delete-popup", () => deletePost(postId));
-  setupConfirmPopup("comment-delete-popup", () => deleteComment(postId));
+function setupPage(postId, isPostAuthor) {
+  if (isPostAuthor) {
+    document.getElementById("edit-post-btn")?.addEventListener("click", () => {
+      loadPage("../pages/posts/editPost.js", { id: postId });
+    });
+    document.getElementById("delete-post-btn")?.addEventListener("click", () => {
+      document.getElementById("post-delete-popup").classList.remove("hidden");
+    });
+    setupConfirmPopup("post-delete-popup", () => deletePost(postId));
+  }
+  setupConfirmPopup("comment-delete-popup", () => deleteComment(postId, commentToDelete));
 
   document.getElementById("comment-submit-btn")?.addEventListener("click", () => {
     if (editCommentId) {
@@ -148,6 +157,48 @@ function setupPage(postId) {
       addComment(postId);
     }
   });
+
+  document.querySelectorAll(".edit-comment-btn").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      editCommentId = btn.dataset.id;
+      const commentItem = btn.closest(".comment-item");
+      document.querySelector(".comment-input").value = commentItem.querySelector(".comment-content").textContent;
+    })
+  );
+
+  document.querySelectorAll(".delete-comment-btn").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      commentToDelete = btn.dataset.id;
+      document.getElementById("comment-delete-popup").classList.remove("hidden");
+    })
+  );
+}
+
+/** 게시글 삭제 요청 */
+async function deletePost(postId) {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!postId) {
+    alert("삭제할 게시글 ID가 없습니다.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (response.ok) {
+      alert("게시글이 삭제되었습니다.");
+      location.reload();
+    } else {
+      alert("게시글 삭제에 실패했습니다.");
+    }
+  } catch (error) {
+    console.error("⛔ 게시글 삭제 오류:", error);
+  }
 }
 
 /** 댓글 등록 요청 */
@@ -170,7 +221,6 @@ async function addComment(postId) {
       },
       body: JSON.stringify({ content }),
     });
-
     if (response.ok) {
       alert("댓글이 등록되었습니다.");
       location.reload();
@@ -183,13 +233,68 @@ async function addComment(postId) {
 }
 
 /** 댓글 입력 유효성 검사 설정 */
-function setupCommentValidation(postId) {
+function setupCommentValidation() {
   const commentInput = document.querySelector(".comment-input");
   const submitButton = document.getElementById("comment-submit-btn");
 
   commentInput.addEventListener("input", () => {
     submitButton.disabled = commentInput.value.trim() === "";
   });
+}
+
+/** 댓글 삭제 요청 */
+async function deleteComment(postId, commentId) {
+  const accessToken = localStorage.getItem("accessToken");
+  if (!commentId) {
+    alert("삭제할 댓글 ID가 없습니다.");
+    return;
+  }
+  try {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}/comments/${commentId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (response.ok) {
+      alert("댓글이 삭제되었습니다.");
+      location.reload();
+    } else {
+      alert("댓글 삭제에 실패했습니다.");
+    }
+  } catch (error) {
+    console.error("⛔ 댓글 삭제 오류:", error);
+  }
+}
+
+/** 댓글 수정 요청 */
+async function updateComment(commentId, postId) {
+  const accessToken = localStorage.getItem("accessToken");
+  const newContent = document.querySelector(".comment-input").value;
+
+  if (!newContent) {
+    alert("댓글 내용을 입력해주세요.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}/comments/${commentId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ content: newContent }),
+    });
+    if (response.ok) {
+      alert("댓글이 수정되었습니다.");
+      location.reload();
+    } else {
+      alert("댓글 수정에 실패했습니다.");
+    }
+  } catch (error) {
+    console.error("⛔ 댓글 수정 오류:", error);
+  }
 }
 
 /** CSS 로드 */
@@ -202,7 +307,6 @@ async function loadStyles() {
     link.href = "../styles/posts/post.css";
     document.head.appendChild(link);
   }
-
   if (!document.getElementById("validation-css")) {
     const link = document.createElement("link");
     link.id = "validation-css";
@@ -210,7 +314,6 @@ async function loadStyles() {
     link.href = "../../components/ValidationButton/ValidationButton.css";
     document.head.appendChild(link);
   }
-
   if (!document.getElementById("confirm-popup-css")) {
     const link = document.createElement("link");
     link.id = "confirm-popup-css";
@@ -219,4 +322,3 @@ async function loadStyles() {
     document.head.appendChild(link);
   }
 }
-
