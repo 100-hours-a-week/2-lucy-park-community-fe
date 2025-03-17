@@ -256,7 +256,7 @@ async function addComment(postId) {
     });
     if (response.ok) {
       alert("댓글이 등록되었습니다.");
-      location.reload();
+      loadPage("../pages/posts/post.js", { id: postId });
     } else {
       alert("댓글 등록에 실패했습니다.");
     }
@@ -291,7 +291,7 @@ async function deleteComment(postId, commentId) {
     });
     if (response.ok) {
       alert("댓글이 삭제되었습니다.");
-      location.reload();
+      loadPage("../pages/posts/post.js", { id: postId });
     } else {
       alert("댓글 삭제에 실패했습니다.");
     }
@@ -321,7 +321,7 @@ async function updateComment(commentId, postId) {
     });
     if (response.ok) {
       alert("댓글이 수정되었습니다.");
-      location.reload();
+      loadPage("../pages/posts/post.js", { id: postId });
     } else {
       alert("댓글 수정에 실패했습니다.");
     }
