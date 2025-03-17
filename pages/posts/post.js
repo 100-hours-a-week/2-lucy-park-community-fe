@@ -84,12 +84,26 @@ export function render(post, comments) {
         <span class="author">${post.user?.nickname || "알 수 없음"}</span>
         <span class="date">${formatDate(post.createdAt)}</span>
       </div>
-
-      ${post.imageUrl ? `<img src="${API_BASE_URL}${post.imageUrl}" alt="게시글 이미지" class="post-image">` : ""}
-      <p class="post-content">${post.content}</p>
       <div class="post-actions">
         ${isPostAuthor ? `<button id="edit-post-btn" class="edit-btn">수정</button>` : ""}
         ${isPostAuthor ? `<button id="delete-post-btn" class="delete-btn">삭제</button>` : ""}
+      </div>
+
+      ${post.imageUrl ? `<img src="${API_BASE_URL}${post.imageUrl}" alt="게시글 이미지" class="post-image">` : ""}
+      <p class="post-content">${post.content}</p>
+      <div class="post-detail">
+          <div class="post-like-btn">
+            <div id="post-like-btn" data-post-id="${post.id}">${post.likeCount}</div>
+            <p>좋아요수</p>
+          </div>
+          <div>
+            <div>${post.viewCount}</div>
+            <p>조회수</p>
+          </div>
+          <div>
+            <div class="comments-count">${post.comments.length}</div>
+            <p>댓글</p>
+          </div>
       </div>
 
       ${commentsHTML}
@@ -104,17 +118,15 @@ export function render(post, comments) {
 function renderComments(comments = []) {
   const userId = getUserId();
 
-  return `
-    <div class="comments-container">
-      <textarea class="comment-input" placeholder="댓글을 입력하세요"></textarea>
-      <button id="comment-submit-btn" class="validation-button" disabled>등록</button>
-      ${
-        comments.length > 0
-          ? comments
-              .map(
-                (comment) => `
+  // 댓글 목록 렌더링
+  const commentsHTML = comments.length > 0 
+    ? comments
+        .map(
+          (comment) => `
         <div class="comment-item" data-id="${comment.id}">
           <div class="comment-meta">
+            ${comment.user?.imageUrl ? 
+              `<img src="${API_BASE_URL}${comment.user?.imageUrl}" alt="작성자 이미지" class="comment-author-image">` : ""}
             <span class="comment-author">${comment.user?.nickname || "알 수 없음"}</span>
             <span class="comment-date">${formatDate(comment.createdAt)}</span>
           </div>
@@ -128,14 +140,29 @@ function renderComments(comments = []) {
               : ""
           }
         </div>
-      `
-              )
-              .join("")
-          : "<p class='no-comments'>아직 댓글이 없습니다.</p>"
-      }
+        `
+        ).join("")
+    : "<p class='no-comments'>아직 댓글이 없습니다.</p>";
+
+  // 댓글 수 업데이트 
+  setTimeout(() => {
+    const commentsCountElem = document.querySelector(".post-detail .comments-count");
+    if (commentsCountElem) {
+      commentsCountElem.textContent = comments.length;
+    }
+  }, 0);
+
+  return `
+    <div class="comments-container">
+      <textarea class="comment-input" placeholder="댓글을 입력하세요"></textarea>
+      <button id="comment-submit-btn" class="validation-button" disabled>등록</button>
+      <div class="comments-list">
+        ${commentsHTML}
+      </div>
     </div>
   `;
 }
+
 
 /** 페이지 이벤트 설정 */
 function setupPage(postId, isPostAuthor) {
@@ -156,6 +183,12 @@ function setupPage(postId, isPostAuthor) {
     } else {
       addComment(postId);
     }
+  });
+
+  // 좋아요 여기
+  document.getElementById("post-like-btn")?.addEventListener("click", async () => {
+    const postId = event.target.getAttribute("data-post-id");
+    await likePost(postId);
   });
 
   document.querySelectorAll(".edit-comment-btn").forEach((btn) =>
@@ -297,6 +330,53 @@ async function updateComment(commentId, postId) {
   }
 }
 
+// 좋아요 API 요청 함수
+async function likePost(postId) {
+  const userId = getUserId(); // 로그인한 유저의 ID 가져오기
+
+  if (!userId) {
+    alert("로그인한 사용자만 좋아요를 누를 수 있습니다.");
+    return;
+  }
+
+  try {
+    // 좋아요 API 요청 보내기
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("accessToken")}`, // JWT 토큰 포함
+      },
+      body: JSON.stringify({
+        userId: userId, // 좋아요를 누른 유저의 ID
+      }),
+    });
+
+    if (response.ok) {
+      // 좋아요가 성공적으로 눌렸다면, 좋아요 수를 증가시키고 UI를 업데이트
+      const data = await response.json();
+      const commentsCountElem = document.getElementById("post-like-btn");
+      const originalCount = parseInt(commentsCountElem.textContent);
+      const updatedCount = data.data.likeCount;
+      setTimeout(() => {
+        const commentsCountElem = document.getElementById("post-like-btn");
+        if (commentsCountElem) {
+          commentsCountElem.textContent = updatedCount;
+        }
+      }, 0);
+      if(originalCount < updatedCount) {
+        alert("좋아요가 추가되었습니다.");
+      } else {
+        alert("좋아요가 취소되었습니다.");
+      }
+    }
+  } catch (error) {
+    console.error("좋아요 처리 중 오류 발생:", error);
+    alert("좋아요 처리 중 오류가 발생했습니다.");
+  }
+}
+
+
 /** CSS 로드 */
 async function loadStyles() {
   // 이미 로드된 CSS를 중복 추가하지 않음
@@ -319,6 +399,13 @@ async function loadStyles() {
     link.id = "confirm-popup-css";
     link.rel = "stylesheet";
     link.href = "../../components/ConfirmPopup/confirmPopup.css";
+    document.head.appendChild(link);
+  }
+  if (!document.getElementById("hover-css")) {
+    const link = document.createElement("link");
+    link.id = "hover-popup-css";
+    link.rel = "stylesheet";
+    link.href = "../../components/HoverButton/HoverButton.css";
     document.head.appendChild(link);
   }
 }

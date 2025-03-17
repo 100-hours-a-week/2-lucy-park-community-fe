@@ -9,7 +9,7 @@ let postData = {
   title: "",
   content: ""
 };
-let validationBtn; // 전역 변수 선언
+let validationBtn; 
 
 /** 게시글 작성 페이지 초기화 */
 export async function init() {
@@ -62,7 +62,7 @@ function setupForm() {
   const titleInput = document.getElementById("title");
   const contentInput = document.getElementById("content");
 
-  // 🔹 유효성 검사 버튼 생성
+  // 유효성 검사 버튼 생성
   validationBtn = createValidationButton("submit-post-btn");
 
   function validateForm() {
@@ -146,7 +146,7 @@ async function createPost(title, content, imageUrl) {
       alert("✅ 게시글이 등록되었습니다.");
       console.log(data);
       console.log(postId);
-      loadPage("../pages/posts/post.js", { id: postId });
+      loadPage("../pages/posts/posts.js");
     } else {
       const errorData = await response.json();
       alert(errorData.error || "게시글 등록에 실패했습니다. 다시 시도해주세요.");

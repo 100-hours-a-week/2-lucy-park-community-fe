@@ -6,9 +6,17 @@ import { API_BASE_URL } from "../../config.js";
 
 let postId = null;
 let currentPost = null;
-// 초기 제목/내용 값 저장 (업데이트 전 비교용)
+
 let initialTitle = "";
 let initialContent = "";
+
+/** 게시글 입력 상태 저장 */
+let postData = {
+  title: "",
+  content: ""
+};
+
+let validationBtn; 
 
 /** 게시글 수정 페이지 초기화 */
 export async function init(params) {
@@ -33,7 +41,7 @@ export async function init(params) {
   const html = await render();
   setTimeout(() => {
     setupBackButton(`../pages/posts/post.js?id=${postId}`, "edit-post-back-button");
-    setupForm();
+    setupForm();  // render 후 setupForm 호출
   }, 0);
 
   return html;
@@ -52,8 +60,8 @@ export async function render() {
         <label for="title">제목</label>
         <input type="text" id="title" maxlength="26" value="${currentPost.title || ''}" />
 
-        <label for="content">내용</label>
-        <textarea id="content" style="height:200px; width:100%; padding:10px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box;">${currentPost.content || ''}</textarea>
+        <label for="post-content">내용</label>
+        <textarea id="post-content" >${currentPost.content || ''}</textarea>
 
         <div class="image-upload-section">
           <label>이미지</label>
@@ -74,97 +82,56 @@ export async function render() {
 
 /** 폼 데이터 설정 및 이벤트 등록 */
 function setupForm() {
-  // 뒤로가기 버튼 설정
-  const backBtn = document.getElementById("edit-post-back-button");
-  backBtn?.addEventListener("click", () => {
-    loadPage(`../pages/posts/post.js?id=${postId}`);
-  });
-  console.log("Back button event listener 등록됨");
+  const form = document.getElementById("edit-post-form");
+  if (!form) {
+    console.error("🚨 edit-post-form 요소가 존재하지 않습니다.");
+    return;
+  }
 
   const titleInput = document.getElementById("title");
-  const contentInput = document.getElementById("content");
-  const fileInput = document.getElementById("image-upload");
-  const selectFileBtn = document.getElementById("select-file-btn");
-  const currentImageDiv = document.getElementById("current-image");
+  const contentInput = document.getElementById("post-content");
 
-  // 렌더링 후 명시적으로 textarea 값 설정
-  contentInput.value = currentPost.content || '';
-
-  // 수정 버튼에 대한 유효성 검사 버튼 생성
-  const validationBtn = createValidationButton("update-post-btn");
+  // 유효성 검사 버튼 생성
+  validationBtn = createValidationButton("submit-post-btn");
 
   function validateForm() {
-    // 현재 입력된 제목/내용을 바로 읽어옴
-    const currentTitle = titleInput.value;
-    const currentContent = contentInput.value;
-    // 제목과 내용이 둘 다 비어있으면 유효하지 않음
-    const isValid = !(currentTitle === "" && currentContent === "");
+    postData.title = titleInput?.value.trim();
+    postData.content = contentInput?.value.trim();
+
+    const isValid = postData.title !== "" && postData.content !== "";
+
     if (validationBtn?.updateValidationState) {
       validationBtn.updateValidationState(isValid);
     }
   }
 
-  titleInput.addEventListener("input", () => {
-    console.log("현재 제목:", titleInput.value);
-    validateForm();
-  });
-  console.log("Title input 이벤트 리스너 등록됨");
+  titleInput.addEventListener("input", validateForm);
+  contentInput.addEventListener("input", validateForm);
 
-  // textarea 내용 업데이트 및 콘솔 출력
-  const updateContent = () => {
-    console.log("현재 내용:", contentInput.value);
-    validateForm();
-  };
-
-  contentInput.addEventListener("input", updateContent);
-  contentInput.addEventListener("change", updateContent);
-  contentInput.addEventListener("keyup", updateContent);
-  contentInput.addEventListener("blur", updateContent);
-  console.log("Content textarea 관련 이벤트 리스너 등록됨");
-
-  selectFileBtn.addEventListener("click", () => fileInput.click());
-  console.log("파일 선택 버튼 클릭 이벤트 리스너 등록됨");
-
-  fileInput.addEventListener("change", (evt) => {
-    const file = evt.target.files[0];
-    if (file) {
-      currentImageDiv.innerHTML = `선택된 파일: ${file.name}`;
-    }
-  });
-  console.log("파일 입력 change 이벤트 리스너 등록됨");
-
-  document.getElementById("edit-post-form")?.addEventListener("submit", handleUpdatePost);
-  console.log("폼 제출 이벤트 리스너 등록됨");
+  setupImageUpload();
+  form.addEventListener("submit", handleUpdatePost);
 }
 
-/** 게시글 정보 가져오기 */
-async function getPost(postId) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/posts/${postId}`);
-    if (response.status === 200) {
-      const { data } = await response.json();
-      return data;
-    } else {
-      alert("게시글을 찾을 수 없습니다.");
-      loadPage("../pages/posts/posts.js");
-    }
-  } catch (error) {
-    console.error("⛔ 게시글 불러오기 실패:", error);
-  }
-  return null;
+/** 이미지 업로드 처리 */
+function setupImageUpload() {
+  const fileInput = document.getElementById("image-upload");
+  const selectFileBtn = document.getElementById("select-file-btn");
+  const currentImageDiv = document.getElementById("current-image");
+
+  selectFileBtn.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", (evt) => {
+    const file = evt.target.files[0];
+    currentImageDiv.textContent = file ? `선택된 파일: ${file.name}` : "파일 없음";
+  });
 }
 
 /** 게시글 수정 처리 */
 async function handleUpdatePost(event) {
   event.preventDefault();
 
-  // 폼 제출 시, 최신 값을 DOM에서 직접 읽어옴
   const titleValue = document.getElementById("title").value;
-  const contentValue = document.getElementById("content").value;
+  const contentValue = document.getElementById("post-content").value;
 
-  console.log("최종 제목:", titleValue);
-  console.log("최종 내용:", contentValue);
-  
   if (titleValue === "" && contentValue === "") {
     alert("제목과 내용을 입력해주세요!");
     return;
@@ -199,12 +166,11 @@ async function updatePost(postId, title, content, imageUrl) {
     updateData.imageUrl = imageUrl;
   }
   
+  // 수정된 내용이 없으면 처리하지 않음
   if (Object.keys(updateData).length === 0) {
     alert("변경된 내용이 없습니다.");
     return;
   }
-  
-  console.log("업데이트 데이터:", updateData);
 
   try {
     const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
@@ -215,15 +181,35 @@ async function updatePost(postId, title, content, imageUrl) {
       },
       body: JSON.stringify(updateData),
     });
+
     if (response.ok) {
       alert("게시글이 수정되었습니다.");
-      location.reload();
+      loadPage("../pages/posts/post.js", { id: postId });
     } else {
-      alert("게시글 수정에 실패했습니다.");
+      const errorData = await response.json();
+      alert(errorData.error || "게시글 수정에 실패했습니다.");
     }
   } catch (error) {
     console.error("⛔ 게시글 수정 오류:", error);
+    alert("게시글 수정에 실패했습니다.");
   }
+}
+
+/** 게시글 정보 가져오기 */
+async function getPost(postId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}`);
+    if (response.status === 200) {
+      const { data } = await response.json();
+      return data;
+    } else {
+      alert("게시글을 찾을 수 없습니다.");
+      loadPage("../pages/posts/posts.js");
+    }
+  } catch (error) {
+    console.error("⛔ 게시글 불러오기 실패:", error);
+  }
+  return null;
 }
 
 /** CSS 로드 */

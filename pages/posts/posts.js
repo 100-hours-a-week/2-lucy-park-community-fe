@@ -110,7 +110,7 @@ function createPostCard(post) {
     <li class="post-card" data-post-id="${post.id}">
       <h3 class="post-title">${truncateText(post.title, 26)}</h3>
       <p class="post-meta">
-        좋아요 ${formatCount(post.likes)} · 댓글 ${formatCount(Array.isArray(post.comments) ? post.comments.length : 0)} · 조회수 ${formatCount(post.views)}
+        좋아요 ${formatCount(post.likeCount)} · 댓글 ${formatCount(Array.isArray(post.comments) ? post.comments.length : 0)} · 조회수 ${formatCount(post.viewCount)}
         <span class="post-date">${formatDate(post.createdAt)}</span>
       </p>
       <div class="post-author">

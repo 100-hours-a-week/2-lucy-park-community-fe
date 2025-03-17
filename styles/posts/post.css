@@ -52,6 +52,7 @@
 .post-actions {
   display: flex;
   gap: 8px;
+  justify-content: flex-end;
 }
 
 .edit-btn,
@@ -61,6 +62,7 @@
   padding: 6px 12px;
   background-color: #eee;
   border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 .edit-btn:hover,
@@ -122,14 +124,15 @@
 
 .comment-meta {
   display: flex;
-  justify-content: space-between;
+  
   align-items: center;
   margin-bottom: 4px;
 }
 
 .comment-author {
   font-weight: bold;
-  position: relative;
+  margin-left: 5px;
+  gap: 8px; 
 }
 
 .comment-nickname {
@@ -141,11 +144,12 @@
 }
 
 .comment-content {
-  margin-bottom: 4px;
+  margin-bottom: 15px;
   line-height: 1.4;
 }
 
 .comment-date {
+  margin-left: 20px;
   font-size: 0.875rem;
   color: #888;
 }
@@ -195,3 +199,51 @@
   border-radius: 8px; /* 이미지의 모서리 둥글게 */
 }
 
+.comment-author-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; 
+  object-fit: cover;
+}
+
+.comments-list {
+  margin-top: 30px;
+}
+
+/* 게시글 통계 (좋아요, 조회수, 댓글수) */
+.post-detail {
+  display: flex;
+  flex-direction: row;
+  gap: 16px; 
+  border-radius: 8px; 
+  padding: 8px 16px;
+  margin-left: 10%;
+}
+
+.post-detail div {
+  padding: 4px 8px;
+  width: 80px;
+  background-color: #ebebeb; 
+  border-radius: 10px; 
+  font-weight: bold;
+  text-align: center;
+}
+
+.post-detail div div {
+  text-align: center;
+  width: 80%;
+  background-color: transparent;
+}
+
+.post-detail div p {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #555; 
+  width: 100%;
+  background-color: transparent;
+}
+
+.post-like-btn:hover {
+  background-color: #cdb4cf; 
+  cursor: pointer;
+}
