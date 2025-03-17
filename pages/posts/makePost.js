@@ -9,13 +9,16 @@ let postData = {
   title: "",
   content: ""
 };
-let validationBtn; // 🔹 전역 변수 선언
+let validationBtn; // 전역 변수 선언
 
 /** 게시글 작성 페이지 초기화 */
 export async function init() {
   await loadStyles();
-  await render(); // ⬅️ HTML 렌더링을 기다린 후 setupForm 실행
-  setupBackButton("../pages/posts/posts.js", "make-post-back-btn");
+  setTimeout(() => {
+    setupBackButton("../pages/posts/makePosts.js", "make-post-back-btn");
+    setupCommentValidation(postId);
+  }, 0);
+  await render(); // HTML 렌더링을 기다린 후 setupForm 실행
   setupForm();
 }
 
@@ -23,7 +26,7 @@ export async function init() {
 export async function render() {
   document.body.innerHTML = `
     <div class="back-button">
-      ${BackButton("../pages/posts/posts.js", "make-post-back-button")}
+      ${BackButton("../pages/posts/posts.js", "make-post-back-btn")}
     </div>
     <section class="make-post-container">
       <h1 class="make-post-title">게시글 작성</h1>
@@ -118,7 +121,7 @@ async function handleSubmitPost(event) {
   await createPost(postData.title, postData.content, imageUrl);
 }
 
-/** 게시글 등록 (서버에 데이터 전송) */
+/** 게시글 등록 */
 async function createPost(title, content, imageUrl) {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
@@ -138,8 +141,12 @@ async function createPost(title, content, imageUrl) {
     });
 
     if (response.ok) {
+      const data = await response.json();
+      const postId = data.data.id;  
       alert("✅ 게시글이 등록되었습니다.");
-      loadPage("../pages/posts/posts.js");
+      console.log(data);
+      console.log(postId);
+      loadPage("../pages/posts/post.js", { id: postId });
     } else {
       const errorData = await response.json();
       alert(errorData.error || "게시글 등록에 실패했습니다. 다시 시도해주세요.");
@@ -149,6 +156,7 @@ async function createPost(title, content, imageUrl) {
     alert("네트워크 오류가 발생했습니다.");
   }
 }
+
 
 /** CSS 로드 */
 async function loadStyles() {

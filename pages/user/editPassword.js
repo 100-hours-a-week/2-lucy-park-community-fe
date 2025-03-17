@@ -1,5 +1,6 @@
 import { loadPage } from "../../scripts/app.js";
 import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
+import { API_BASE_URL } from "../../config.js";
 
 /**
  * 비밀번호 수정 페이지 렌더 함수
@@ -117,25 +118,26 @@ function validateConfirmPassword() {
 /**
  * 서버에 비밀번호 변경 요청
  */
-async function updatePassword(newPassword) {
+async function updatePassword(password) {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
     alert("로그인이 필요합니다.");
     loadPage("../pages/auth/login.js");
     return;
   }
+  const requestBody = { password };
 
   try {
-    const response = await fetch("https://example.com/users/password", {
+    const response = await fetch(`${API_BASE_URL}/users/profile/password`, {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json;charset=UTF-8",
+        "Content-Type": "application/json;",
         Authorization: `Bearer ${accessToken}`
       },
-      body: JSON.stringify({ password: newPassword })
+      body: JSON.stringify(requestBody)
     });
 
-    if (response.status === 200) {
+    if (response.ok) {
       console.log("✅ 비밀번호 변경 성공");
       alert("비밀번호가 변경되었습니다. 다시 로그인해주세요.");
       localStorage.removeItem("accessToken"); // 로그아웃 처리

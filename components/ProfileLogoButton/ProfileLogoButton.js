@@ -81,8 +81,8 @@ async function logoutUser() {
 
     try {
         // 실제 서버 주소로 변경
-        const response = await fetch(`${API_BASE_URL}/users/logout`, {
-            method: "POST",
+        const response = await fetch(`${API_BASE_URL}/users/session`, {
+            method: "PATCH",
             headers: {
                 "Content-Type": "application/json;charset=UTF-8",
                 Authorization: `Bearer ${accessToken}`

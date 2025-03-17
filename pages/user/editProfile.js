@@ -193,18 +193,50 @@ export function setupEditProfile() {
     confirmModal.classList.remove("hidden");
   });
 
-  setupConfirmPopup("confirm-modal", () => {
-    // 회원탈퇴 로직 예시
-    localStorage.removeItem("id");
-    localStorage.removeItem("email");
-    localStorage.removeItem("nickname");
-    localStorage.removeItem("profileImage");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("posts");
-    localStorage.removeItem("comments");
-    alert("회원탈퇴가 완료되었습니다.");
-    loadPage("../pages/auth/login.js");
+  setupConfirmPopup("confirm-modal", async () => {
+    // 회원 탈퇴 로직(백)
+    await requestDeleteAccount();
   });
+}
+
+/** 회원 탈퇴 요청 */
+async function requestDeleteAccount() {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    alert("로그인이 필요합니다.");
+    loadPage("../pages/auth/login.js");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/profile/session`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (response.ok) {
+      // 회원탈퇴 성공 시 로컬 스토리지 초기화
+      localStorage.removeItem("id");
+      localStorage.removeItem("email");
+      localStorage.removeItem("nickname");
+      localStorage.removeItem("profileImage");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("posts");
+      localStorage.removeItem("comments");
+
+      alert("회원탈퇴가 완료되었습니다.");
+      loadPage("../pages/auth/login.js");
+    } else {
+      console.error("⛔ 회원탈퇴 실패:", response.status);
+      alert("회원탈퇴에 실패했습니다.");
+    }
+  } catch (error) {
+    console.error("⛔ 네트워크 오류:", error);
+    alert("네트워크 오류가 발생했습니다.");
+  }
 }
 
 /** 닉네임 유효성 검사 */
@@ -241,7 +273,14 @@ function loadEditProfileStyles() {
     const link = document.createElement("link");
     link.id = "edit-profile-css";
     link.rel = "stylesheet";
-    link.href = "../styles/user/editProfile.css"; // 원하는 CSS 경로
+    link.href = "../styles/user/editProfile.css"; 
+    document.head.appendChild(link);
+  }
+  if (!document.getElementById("confirm-popup-css")) {
+    const link = document.createElement("link");
+    link.id = "confirm-popup-css";
+    link.rel = "stylesheet";
+    link.href = "../../components/ConfirmPopup/confirmPopup.css";
     document.head.appendChild(link);
   }
 }
