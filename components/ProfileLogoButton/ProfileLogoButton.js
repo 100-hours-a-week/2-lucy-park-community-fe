@@ -75,12 +75,11 @@ async function logoutUser() {
 
     if (!accessToken) {
         alert("이미 로그아웃되었습니다.");
-        loadPage("../pages/auth/login.js");
+        location.reload();
         return;
     }
 
     try {
-        // 실제 서버 주소로 변경
         const response = await fetch(`${API_BASE_URL}/users/session`, {
             method: "PATCH",
             headers: {
@@ -118,7 +117,7 @@ function handleLogout() {
     localStorage.removeItem("user");
     localStorage.removeItem("accessToken");
     alert("로그아웃 되었습니다.");
-    loadPage("../pages/auth/login.js");
+    location.reload();
 }
 
 /**

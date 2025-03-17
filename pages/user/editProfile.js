@@ -2,6 +2,8 @@ import { loadPage } from "../../scripts/app.js";
 import { ConfirmPopup, setupConfirmPopup } from "../../components/ConfirmPopup/ConfirmPopup.js";
 import { API_BASE_URL } from "../../config.js";
 import { uploadImage } from "../../scripts/utils.js"; 
+import { renderHeader } from "../../components/Header/Header.js";
+import { renderProfileLogoButton } from "../../components/ProfileLogoButton/ProfileLogoButton.js";
 
 // 로컬 스토리지에서 값들을 각각 꺼내오기
 let id = localStorage.getItem("id") || "";
@@ -33,11 +35,18 @@ async function updateProfileImage(response) {
     if (response.ok) {
       const result = await response.json();
       console.log("✅ 프로필 이미지 업데이트 응답:", result);
-      // 서버 응답 구조 예시: { message: "update_profile_image_success", data: { imageUrl: "/uploads/thumbnail_XXX.JPG" } }
       if (result.data && result.data.imageUrl) {
         localStorage.setItem("profileImage", result.data.imageUrl);
       }
       showToastMessage("프로필 이미지가 업데이트되었습니다.");
+
+      // 헤더에서 프로필 이미지만 업데이트
+      const profileImg = document.getElementById("profile-img");
+      if (profileImg) {
+        profileImg.src = `${API_BASE_URL}${result.data.imageUrl}`;
+      }
+
+      loadPage("../pages/user/editProfile.js");
     } else {
       console.error("⛔ 프로필 업데이트 실패:", response.status);
       alert("프로필 업데이트에 실패했습니다.");
@@ -194,7 +203,6 @@ export function setupEditProfile() {
   });
 
   setupConfirmPopup("confirm-modal", async () => {
-    // 회원 탈퇴 로직(백)
     await requestDeleteAccount();
   });
 }
@@ -228,7 +236,7 @@ async function requestDeleteAccount() {
       localStorage.removeItem("comments");
 
       alert("회원탈퇴가 완료되었습니다.");
-      loadPage("../pages/auth/login.js");
+      location.reload();
     } else {
       console.error("⛔ 회원탈퇴 실패:", response.status);
       alert("회원탈퇴에 실패했습니다.");

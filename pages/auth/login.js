@@ -154,7 +154,7 @@ async function handleLogin(event) {
       localStorage.setItem("profileImage", res.data.imageUrl);
 
       alert("로그인 성공!");
-      loadPage("../pages/posts/posts.js");
+      location.reload();
     } else if (response.status === 400) {
       const errorData = await response.json();
       console.error("⛔ 필수 항목 누락:", errorData.error);
