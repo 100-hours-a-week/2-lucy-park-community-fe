@@ -108,12 +108,14 @@ async function loadPosts() {
 function createPostCard(post) {
   return `
     <li class="post-card" data-post-id="${post.id}">
-      <h3 class="post-title">${truncateText(post.title, 26)}</h3>
+      <div class="post-title">${truncateText(post.title, 26)}</div>
       <p class="post-meta">
         좋아요 ${formatCount(post.likeCount)} · 댓글 ${formatCount(Array.isArray(post.comments) ? post.comments.length : 0)} · 조회수 ${formatCount(post.viewCount)}
         <span class="post-date">${formatDate(post.createdAt)}</span>
       </p>
       <div class="post-author">
+      ${post.user?.imageUrl ? 
+        `<img src="${API_BASE_URL}${post.user?.imageUrl}" alt="작성자 이미지" class="post-author-image">` : ""}
         <span>${post.user.nickname}</span>
       </div>
     </li>

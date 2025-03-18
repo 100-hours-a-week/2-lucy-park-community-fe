@@ -1,5 +1,5 @@
 .post-list-container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 30px auto;
   padding: 20px;
   background-color: white;
@@ -37,21 +37,23 @@
 .post-title {
   text-align: left;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .post-meta {
+  display: flex;
+  justify-content: flex-start; 
   font-size: 14px;
-  margin: 5px 0;
   padding-bottom: 5px;
   border-bottom: 2px solid #e1e0e0;
+  padding-top: 10px;
 }
 
 .post-author {
   display: flex;
   align-items: center;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .profile-pic {
@@ -62,7 +64,7 @@
 }
 
 .post-date {
-  margin-left: 40px;
+  margin-left: 80px;
   font-size: 12px;
   color: #aaa;
 }
@@ -81,10 +83,18 @@
 
 #create-post-btn-container {
   display: flex;
-  justify-content: flex-end; /* 오른쪽 정렬 */
+  justify-content: flex-end; 
   margin-bottom: 15px;
 }
 
 strong {
   font-size: 18px;
+}
+
+.post-author-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%; 
+  object-fit: cover;
+  margin-right: 10px;
 }
