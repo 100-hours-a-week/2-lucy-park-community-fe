@@ -17,7 +17,7 @@ function initializeApp() {
   const storedUserToken = localStorage.getItem("accessToken");
   const storedUserId = localStorage.getItem("id");
 
-  if (storedUserToken && storedUserId) {
+  if (storedUserToken != null && storedUserId != null) {
     // 로그인된 상태: 헤더와 hr을 보이게 설정
     // 초기 헤더는 기본값(뒤로가기 버튼 없음)으로 렌더링해두고, loadPage에서 업데이트함.
     appElement.innerHTML = renderHeader();
@@ -38,11 +38,18 @@ function initializeApp() {
  * 뒤로가기 버튼을 누르면 기본적으로 게시글 목록 페이지로 이동하도록 설정했습니다.
  */
 function updateHeader(pageScript) {
+  // 로그인 상태가 아닌 경우 header 업데이트하지 않음
+  const storedUserToken = localStorage.getItem("accessToken");
+  const storedUserId = localStorage.getItem("id");
+  if (!storedUserToken || !storedUserId) {
+    return;
+  }
+
   const appElement = document.getElementById("app");
   if (!appElement) return;
 
   let showBackButton = false;
-  let backButtonTarget = "../pages/posts/posts.js"; // 기본 뒤로가기 대상
+  let backButtonTarget = "../pages/posts/posts.js";
 
   // 조건에 따라 뒤로가기 버튼 표시 여부 결정
   if (
@@ -58,9 +65,10 @@ function updateHeader(pageScript) {
   setupHeader(backButtonTarget, showBackButton);
 }
 
+
 /** loadPage 수정: params를 추가하여 데이터 전달 */
 export function loadPage(pageScript, params = {}) {
-  // 페이지 스크립트에 따라 헤더 업데이트
+  // 페이지 스크립트에 따라 헤더 업데이트 필요함~~
   updateHeader(pageScript);
 
   import(pageScript)

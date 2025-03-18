@@ -1,4 +1,5 @@
 import { loadPage } from "../../scripts/app.js";
+import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 import { uploadImage } from "../../scripts/utils.js"; 
 import { API_BASE_URL } from "../../config.js";
@@ -38,6 +39,9 @@ export async function init(params) {
   initialContent = currentPost.content;
 
   const html = await render();
+  setTimeout(() => {
+    setupForm();  // render 후 setupForm 호출
+  }, 0);
 
   return html;
 }

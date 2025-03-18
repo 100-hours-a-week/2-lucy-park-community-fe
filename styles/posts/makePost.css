@@ -9,42 +9,24 @@
   box-sizing: border-box;
 }
 
-.make-post-title {
+.make-post-container .make-post-title {
   text-align: center;
   font-size: 28px;
   margin-bottom: 20px;
 }
 
-.back-button {
-  position: fixed;
-  top: 15px;
-  left: 500px;
-  z-index: 1000;
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #444;
-  transition: color 0.3s;
-  z-index: 9999;
-}
-
-#back-btn:hover {
-  color: #222;
-}
-
-label {
+.make-post-container label {
   font-weight: bold;
   display: block;
   margin-top: 10px;
 }
 
-.required {
+.make-post-container .make-required {
   color: red;
 }
 
-input[type="text"],
-textarea {
+.make-post-container input[type="text"],
+.make-post-container textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -54,22 +36,22 @@ textarea {
   box-sizing: border-box;
 }
 
-textarea {
+.make-post-container textarea {
   height: 200px;
   resize: vertical;
 }
 
-.image-upload-section {
+.make-post-container .make-image-upload-section {
   margin-top: 15px;
 }
 
-#current-image {
+.make-post-container #make-current-image {
   margin-bottom: 10px;
   font-size: 14px;
   color: #666;
 }
 
-#select-file-btn {
+.make-post-container #make-select-file-btn {
   background-color: #ddd;
   padding: 8px 14px;
   border: none;
@@ -77,11 +59,11 @@ textarea {
   cursor: pointer;
 }
 
-#select-file-btn:hover {
+.make-post-container #make-select-file-btn:hover {
   background-color: #ccc;
 }
 
-.submit-btn {
+.make-post-container .make-submit-btn {
   width: 100%;
   margin-top: 20px;
   padding: 12px;
@@ -93,20 +75,20 @@ textarea {
   transition: background-color 0.3s;
 }
 
-.submit-btn.active {
+.make-post-container .make-submit-btn.active {
   background-color: #7f6aee;
 }
 
-.submit-btn:hover {
+.make-post-container .make-submit-btn:hover {
   opacity: 0.9;
 }
 
-.helper-text {
+.make-post-container .make-helper-text {
   color: red;
   font-size: 0.9rem;
   margin-top: 5px;
 }
 
-.hidden {
+.make-post-container .make-hidden {
   display: none;
 }

@@ -8,39 +8,42 @@ let postData = {
   title: "",
   content: ""
 };
+
 let validationBtn; 
 
 /** 게시글 작성 페이지 초기화 */
 export async function init() {
   await loadStyles();
-  await render(); // HTML 렌더링을 기다린 후 setupForm 실행
-  setupForm();
+  const html = await render();
+  // DOM에 HTML이 반영된 후 setupForm 실행
+  setTimeout(setupForm, 0);
+  return html;
 }
 
-/** HTML 렌더링 */
+/** HTML 렌더링 - 공통 레이아웃(헤더 등)은 유지하고 #content 영역만 업데이트 */
 export async function render() {
-  document.body.innerHTML = `
-    <section class="make-post-container">
-      <h1 class="make-post-title">게시글 작성</h1>
-      <form id="make-post-form">
-        <label for="title">제목 <span class="required">*</span></label>
-        <input type="text" id="title" maxlength="26" placeholder="제목을 입력해주세요. (최대 26자)" required />
-        <p id="title-helper" class="helper-text hidden">* 제목은 최대 26자까지 가능합니다.</p>
+  return `
+      <section class="make-post-container">
+        <h1 class="make-post-title">게시글 작성</h1>
+        <form id="make-post-form">
+          <label for="title">제목 <span class="required">*</span></label>
+          <input type="text" id="title" maxlength="26" placeholder="제목을 입력해주세요. (최대 26자)" required />
+          <p id="title-helper" class="helper-text hidden">* 제목은 최대 26자까지 가능합니다.</p>
 
-        <label for="content">내용 <span class="required">*</span></label>
-        <textarea id="content" placeholder="내용을 입력하세요." required></textarea>
+          <label for="content">내용 <span class="required">*</span></label>
+          <textarea id="content" placeholder="내용을 입력하세요." required></textarea>
 
-        <div class="image-upload-section">
-          <label>이미지</label>
-          <div id="current-image">파일 없음</div>
-          <input type="file" id="image-upload" accept="image/*" hidden />
-          <button type="button" id="select-file-btn">파일 선택</button>
-        </div>
+          <div class="image-upload-section">
+            <label>이미지</label>
+            <div id="current-image">파일 없음</div>
+            <input type="file" id="make-image-upload" accept="image/*" hidden />
+            <button type="button" id="make-select-file-btn">파일 선택</button>
+          </div>
 
-        <button type="submit" id="submit-post-btn" class="submit-btn">등록</button>
-      </form>
-    </section>
-  `;
+          <button type="submit" id="submit-post-btn" class="make-submit-btn">등록</button>
+        </form>
+      </section>
+    `;
 }
 
 /** 폼 데이터 설정 및 이벤트 등록 */
@@ -61,7 +64,6 @@ function setupForm() {
     postData.title = titleInput.value.trim();
     postData.content = contentInput.value.trim();
     const isValid = postData.title !== "" && postData.content !== "";
-
     if (validationBtn?.updateValidationState) {
       validationBtn.updateValidationState(isValid);
     }
@@ -100,20 +102,17 @@ async function handleSubmitPost(event) {
 
   let imageUrl = null;
   if (file) {
-    let response = await uploadImage(file);
-    console.log(response);
-    if (!response.imageUrl) {
+    imageUrl = await uploadImage(file);
+    if (!imageUrl) {
       alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
       return;
     }
-    imageUrl = response.imageUrl;
   }
 
-  console.log(postData.title, postData.content, imageUrl);
   await createPost(postData.title, postData.content, imageUrl);
 }
 
-/** 게시글 등록 */
+/** 게시글 등록 요청 */
 async function createPost(title, content, imageUrl) {
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
@@ -136,8 +135,6 @@ async function createPost(title, content, imageUrl) {
       const data = await response.json();
       const postId = data.data.id;  
       alert("✅ 게시글이 등록되었습니다.");
-      console.log(data);
-      console.log(postId);
       loadPage("../pages/posts/posts.js");
     } else {
       const errorData = await response.json();
@@ -148,7 +145,6 @@ async function createPost(title, content, imageUrl) {
     alert("네트워크 오류가 발생했습니다.");
   }
 }
-
 
 /** CSS 로드 */
 async function loadStyles() {
