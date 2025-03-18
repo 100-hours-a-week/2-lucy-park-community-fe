@@ -6,7 +6,7 @@ import { API_BASE_URL } from "../../config.js";
 export function render() {
   return `
     <section class="post-list-container">
-      <p class="welcome-message">안녕하세요,<br>아무 말 대잔치 게시판 입니다.</p>
+      <p class="welcome-message">안녕하세요,<br>아무 말 대잔치 <strong>게시판</strong> 입니다.</p>
       <div id="create-post-btn-container"></div>
       
       <ul id="post-list" class="post-list"></ul>

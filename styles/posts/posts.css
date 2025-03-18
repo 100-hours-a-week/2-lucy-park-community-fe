@@ -1,5 +1,5 @@
 .post-list-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 30px auto;
   padding: 20px;
   background-color: white;
@@ -15,6 +15,7 @@
 
 .post-list {
   list-style: none;
+  width: 400px;
   padding: 0;
 }
 
@@ -82,4 +83,8 @@
   display: flex;
   justify-content: flex-end; /* 오른쪽 정렬 */
   margin-bottom: 15px;
+}
+
+strong {
+  font-size: 18px;
 }

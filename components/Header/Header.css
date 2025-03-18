@@ -3,7 +3,7 @@
     justify-content: center;
     align-items: center;
     padding: 25px 60px; /* 기존 15px → 25px로 높이 증가 */
-    background: #ffffff;
+    background-color: #f4f5f7;
     border-bottom: 1px solid #ddd;
     position: relative;
     min-height: 40px; /* 최소 높이 추가 */

@@ -30,9 +30,18 @@
 /* 작성자, 등록일 등 메타 정보 */
 .post-meta {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: row;
   margin-bottom: 16px;
+}
+
+.post-author {
+  margin-left: 15px;
+  font-weight: 700;
+}
+
+.post-date {
+  margin-top: 14px;
+  margin-right: 95px;
 }
 
 .author-info {
@@ -59,9 +68,9 @@
 .delete-btn {
   cursor: pointer;
   border: none;
-  padding: 6px 12px;
-  background-color: #eee;
-  border-radius: 4px;
+  padding: 2px 12px;
+  border-radius: 20px;
+  border: 1px solid #ACA0EB;
   transition: background-color 0.3s ease;
 }
 
@@ -92,14 +101,20 @@
   font-size: 14px;
 }
 
-/* 댓글 컨테이너 */
 .comments-container {
   margin-top: 32px;
   border-top: 1px solid #ddd;
   padding-top: 16px;
 }
 
-/* 댓글 입력 영역 */
+.comment-input-container {
+  background-color: #ffffff;
+}
+
+.validation-button {
+  width: 20px;
+}
+
 .comment-form {
   margin-bottom: 24px;
 }
@@ -164,8 +179,8 @@
 .delete-comment-btn {
   cursor: pointer;
   border: none;
-  padding: 4px 8px;
-  background-color: #eee;
+  padding: 5px 8px;
+  background-color: #ffffff;
   border-radius: 4px;
 }
 
@@ -176,29 +191,30 @@
 
 /* 게시글 이미지 영역 */
 .post-image {
-  width: 100%; /* 기본적으로 너비를 100%로 설정 */
-  max-width: 600px; /* 최대 너비를 600px로 설정 */
-  height: auto; /* 비율에 맞게 자동으로 높이 조정 */
-  margin-bottom: 20px; /* 이미지 하단에 여백 추가 */
-  border-radius: 8px; /* 모서리 둥글게 */
-  object-fit: cover; /* 이미지가 영역을 덮도록 설정 */
+  width: 100%; 
+  max-width: 600px;
+  height: auto; 
+  margin-bottom: 20px; 
+  border-radius: 8px;
+  object-fit: cover; 
 }
 
 /* 여러 개의 이미지가 있을 때 */
 .image-gallery {
   display: flex;
-  flex-wrap: wrap; /* 화면 크기에 따라 줄 바꿈 */
-  gap: 10px; /* 이미지 간 간격 */
-  justify-content: center; /* 가운데 정렬 */
+  flex-wrap: wrap; 
+  gap: 10px;
+  justify-content: center; 
 }
 
 .image-gallery img {
-  width: 150px; /* 각 이미지를 150px로 설정 */
-  height: 100px; /* 고정된 높이 */
-  object-fit: cover; /* 비율에 맞게 잘라서 보여줌 */
-  border-radius: 8px; /* 이미지의 모서리 둥글게 */
+  width: 150px; 
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px; 
 }
 
+.post-author-image,
 .comment-author-image {
   width: 40px;
   height: 40px;
@@ -244,6 +260,6 @@
 }
 
 .post-like-btn:hover {
-  background-color: #cdb4cf; 
+  background-color: #ACA0EB; 
   cursor: pointer;
 }
