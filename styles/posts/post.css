@@ -31,17 +31,18 @@
 .post-meta {
   display: flex;
   flex-direction: row;
+  justify-content: flex-start; 
   margin-bottom: 16px;
 }
 
 .post-author {
-  margin-left: 15px;
+  margin-left: 10px;
   font-weight: 700;
 }
 
 .post-date {
-  margin-top: 14px;
-  margin-right: 95px;
+  margin-top: 15px;
+  margin-right: 50px;
 }
 
 .author-info {
