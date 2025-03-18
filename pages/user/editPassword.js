@@ -39,10 +39,6 @@ export function render() {
 
         <button type="submit" id="edit-update-btn" disabled>수정하기</button>
       </form>
-
-      <div class="back-button">
-        ${BackButton("../pages/user/editProfile.js")}
-      </div>
     </section>
   `;
 }

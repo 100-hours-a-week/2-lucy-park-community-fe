@@ -2,7 +2,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 25px 60px; /* 기존 15px → 25px로 높이 증가 */
+    padding: 25px 50px; 
     background-color: #f4f5f7;
     border-bottom: 1px solid #ddd;
     position: relative;
