@@ -83,8 +83,8 @@ export function render(post, comments) {
       <div class="post-detail-meta">
       ${post.user?.imageUrl ? 
         `<img src="${API_BASE_URL}${post.user?.imageUrl}" alt="작성자 이미지" class="post-author-image">` : ""}
-        <span class="post-author">${post.user?.nickname || "알 수 없음"}</span>
-        <span class="post-date">${formatDate(post.createdAt)}</span>
+        <span class="post-detail-author">${post.user?.nickname || "알 수 없음"}</span>
+        <span class="post-detail-date">${formatDate(post.createdAt)}</span>
         <div class="post-actions">
           ${isPostAuthor ? `<button id="edit-post-btn" class="edit-btn">수정</button>` : ""}
           ${isPostAuthor ? `<button id="delete-post-btn" class="delete-btn">삭제</button>` : ""}

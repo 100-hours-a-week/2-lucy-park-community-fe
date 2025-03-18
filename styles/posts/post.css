@@ -38,14 +38,19 @@
   border-bottom: 1px solid #ddd;
 }
 
-.post-author {
-  margin-left: 10px;
+.post-detail-author {
+  font-size: 15px;
   font-weight: 700;
+  margin-left: 5px;
+  margin-top: 10px;
 }
 
-.post-date {
-  margin-top: 15px;
-  margin-right: 50px;
+.post-detail-date {
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 12px;
+  margin-left: 20px;
+  margin-right: 100px;
 }
 
 .author-info {
@@ -72,8 +77,8 @@
 .delete-btn {
   cursor: pointer;
   border: none;
-  padding: 2px 12px;
-  border-radius: 20px;
+  padding: 0px 10px;
+  border-radius: 15px;
   border: 1px solid #ACA0EB;
   transition: background-color 0.3s ease;
 }
