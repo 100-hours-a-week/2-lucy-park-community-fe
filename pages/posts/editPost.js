@@ -1,5 +1,4 @@
 import { loadPage } from "../../scripts/app.js";
-import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 import { uploadImage } from "../../scripts/utils.js"; 
 import { API_BASE_URL } from "../../config.js";
@@ -39,10 +38,6 @@ export async function init(params) {
   initialContent = currentPost.content;
 
   const html = await render();
-  setTimeout(() => {
-    setupBackButton(`../pages/posts/post.js?id=${postId}`, "edit-post-back-button");
-    setupForm();  // render 후 setupForm 호출
-  }, 0);
 
   return html;
 }
@@ -51,9 +46,6 @@ export async function init(params) {
 export async function render() {
   return `
     <section class="edit-post-container">
-      <div class="back-button">
-        ${BackButton(`../pages/posts/post.js?id=${postId}`, "edit-post-back-button")}
-      </div>
       <h1 class="edit-post-title">게시글 수정</h1>
       
       <form id="edit-post-form">

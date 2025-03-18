@@ -1,4 +1,3 @@
-import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { loadPage } from "../../scripts/app.js";
 import { uploadImage } from "../../scripts/utils.js"; 
 import { API_BASE_URL } from "../../config.js";
@@ -33,9 +32,6 @@ async function registerUser(email, password, nickname, imageUrl = null) {
 export function render() {
     return `
     <section class="signup-container">
-      <div class="back-button">
-        ${BackButton("../pages/auth/login.js")}
-      </div>
       <h2>회원가입</h2>
       <form id="signup-form">
         <div class="profile-section">
@@ -80,7 +76,6 @@ export function render() {
 export function setup() {
     loadStyles();
     setupEventListeners();
-    setupBackButton("../pages/auth/login.js");
 }
 
 function loadStyles() {

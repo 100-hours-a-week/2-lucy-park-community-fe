@@ -1,5 +1,4 @@
 import { loadPage } from "../../scripts/app.js";
-import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { ConfirmPopup, setupConfirmPopup } from "../../components/ConfirmPopup/ConfirmPopup.js";
 import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 import { formatDate } from "../../scripts/utils.js";
@@ -54,7 +53,6 @@ export async function init(params) {
   const comments = await getComments(postId);
 
   setTimeout(() => {
-    setupBackButton("../pages/posts/posts.js", "post-back-btn");
     setupCommentValidation(postId);
   }, 0);
 
@@ -75,9 +73,6 @@ export function render(post, comments) {
 
   return `
     <section class="post-container">
-      <div class="back-button">
-        ${BackButton("../pages/posts/posts.js", "post-back-btn")}
-      </div>
 
       <h1 class="post-detail-title">${post.title}</h1>
       <div class="post-detail-meta">
@@ -349,15 +344,13 @@ async function likePost(postId) {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("accessToken")}`, // JWT 토큰 포함
-      },
-      body: JSON.stringify({
-        userId: userId, // 좋아요를 누른 유저의 ID
-      }),
+        "Authorization": `Bearer ${localStorage.getItem("accessToken")}`, 
+      }
     });
 
     if (response.ok) {
       // 좋아요가 성공적으로 눌렸다면, 좋아요 수를 증가시키고 UI를 업데이트
+      console.log("좋아요가 업데이트되었습니다.")
       const data = await response.json();
       const commentsCountElem = document.getElementById("post-like-btn");
       const originalCount = parseInt(commentsCountElem.textContent);

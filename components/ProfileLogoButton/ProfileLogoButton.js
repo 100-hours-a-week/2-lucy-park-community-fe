@@ -114,8 +114,11 @@ async function logoutUser() {
  * 로그아웃 처리 (로컬 스토리지 정리 및 로그인 페이지 이동)
  */
 function handleLogout() {
-    localStorage.removeItem("user");
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("email");
+    localStorage.removeItem("id");
+    localStorage.removeItem("nickname");
+    localStorage.removeItem("profileImage");
     alert("로그아웃 되었습니다.");
     location.reload();
 }

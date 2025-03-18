@@ -2,6 +2,9 @@ import { loadPage } from "../../scripts/app.js";
 import { HoverButton, setupHoverButton } from "../../components/HoverButton/HoverButton.js";
 import { truncateText, formatDate, formatCount } from "../../scripts/utils.js"; 
 import { API_BASE_URL } from "../../config.js";
+import { renderHeader, setupHeader } from "../../components/Header/Header.js";
+
+
 
 export function render() {
   return `

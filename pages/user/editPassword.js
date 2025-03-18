@@ -1,5 +1,4 @@
 import { loadPage } from "../../scripts/app.js";
-import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { API_BASE_URL } from "../../config.js";
 
 /**
@@ -50,7 +49,6 @@ export function render() {
 export function setup() {
   loadStyles();
   setupEventListeners();
-  setupBackButton("../pages/user/editProfile.js");
 }
 
 /**

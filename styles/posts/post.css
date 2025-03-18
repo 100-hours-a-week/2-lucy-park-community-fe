@@ -7,20 +7,6 @@
   box-sizing: border-box;
 }
 
-.back-button {
-  position: fixed;
-  top: 15px;
-  left: 500px;
-  z-index: 1000;
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #444;
-  transition: color 0.3s;
-  z-index: 9999;
-}
-
 /* 게시글 제목 */
 .post-detail-title {
   font-size: 24px;

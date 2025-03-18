@@ -1,5 +1,4 @@
 import { loadPage } from "../../scripts/app.js";
-import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
 import { uploadImage } from "../../scripts/utils.js"; 
 import { API_BASE_URL } from "../../config.js";
@@ -14,10 +13,6 @@ let validationBtn;
 /** 게시글 작성 페이지 초기화 */
 export async function init() {
   await loadStyles();
-  setTimeout(() => {
-    setupBackButton("../pages/posts/makePosts.js", "make-post-back-btn");
-    setupCommentValidation(postId);
-  }, 0);
   await render(); // HTML 렌더링을 기다린 후 setupForm 실행
   setupForm();
 }
@@ -25,9 +20,6 @@ export async function init() {
 /** HTML 렌더링 */
 export async function render() {
   document.body.innerHTML = `
-    <div class="back-button">
-      ${BackButton("../pages/posts/posts.js", "make-post-back-btn")}
-    </div>
     <section class="make-post-container">
       <h1 class="make-post-title">게시글 작성</h1>
       <form id="make-post-form">
