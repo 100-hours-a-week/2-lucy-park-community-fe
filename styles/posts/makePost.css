@@ -26,6 +26,7 @@
   cursor: pointer;
   color: #444;
   transition: color 0.3s;
+  z-index: 9999;
 }
 
 #back-btn:hover {

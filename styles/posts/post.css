@@ -18,21 +18,24 @@
   cursor: pointer;
   color: #444;
   transition: color 0.3s;
+  z-index: 9999;
 }
 
 /* 게시글 제목 */
-.post-title {
+.post-detail-title {
   font-size: 24px;
   margin-bottom: 8px;
   font-weight: bold;
 }
 
 /* 작성자, 등록일 등 메타 정보 */
-.post-meta {
+.post-detail-meta {
   display: flex;
   flex-direction: row;
   justify-content: flex-start; 
   margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
 }
 
 .post-author {

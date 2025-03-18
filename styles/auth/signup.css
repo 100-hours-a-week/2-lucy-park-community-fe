@@ -10,6 +10,7 @@ h2 {
     position: absolute;
     left: 280px; /* 기본 위치에서 오른쪽으로 100px 이동 */
     top: 0px; /* 상단 여백 유지 */
+    z-index: 9999;
 }
 
 .profile-section {

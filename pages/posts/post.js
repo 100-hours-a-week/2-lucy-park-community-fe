@@ -79,8 +79,8 @@ export function render(post, comments) {
         ${BackButton("../pages/posts/posts.js", "post-back-btn")}
       </div>
 
-      <h1 class="post-title">${post.title}</h1>
-      <div class="post-meta">
+      <h1 class="post-detail-title">${post.title}</h1>
+      <div class="post-detail-meta">
       ${post.user?.imageUrl ? 
         `<img src="${API_BASE_URL}${post.user?.imageUrl}" alt="작성자 이미지" class="post-author-image">` : ""}
         <span class="post-author">${post.user?.nickname || "알 수 없음"}</span>
