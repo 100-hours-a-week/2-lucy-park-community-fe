@@ -12,32 +12,32 @@ export function render() {
       
       <form id="edit-password-form">
         <div class="input-group">
-          <label for="password">새 비밀번호</label>
+          <label for="edit-password-input">새 비밀번호</label>
           <input 
             type="password" 
-            id="password" 
+            id="edit-password-input" 
             placeholder="새 비밀번호를 입력하세요" 
             required 
           />
-          <p id="password-helper" class="helper-text hidden">
+          <p id="edit-password-helper" class="edit-password-helper hidden">
             비밀번호는 8~20자, 대소문자, 숫자, 특수문자를 포함해야 합니다.
           </p>
         </div>
 
         <div class="input-group">
-          <label for="confirm-password">비밀번호 확인</label>
+          <label for="edit-confirm-input">비밀번호 확인</label>
           <input 
             type="password" 
-            id="confirm-password" 
+            id="edit-confirm-input" 
             placeholder="새 비밀번호를 다시 입력하세요" 
             required 
           />
-          <p id="confirm-password-helper" class="helper-text hidden">
+          <p id="edit-confirm-helper" class="edit-password-helper hidden">
             비밀번호가 일치하지 않습니다.
           </p>
         </div>
 
-        <button type="submit" id="update-password-btn" disabled>수정하기</button>
+        <button type="submit" id="edit-update-btn" disabled>수정하기</button>
       </form>
 
       <div class="back-button">
@@ -46,6 +46,7 @@ export function render() {
     </section>
   `;
 }
+
 
 /**
  * 페이지 초기 설정 함수
@@ -74,6 +75,7 @@ function loadStyles() {
  */
 function setupEventListeners() {
   const form = document.getElementById("edit-password-form");
+  // input 이벤트마다 각 필드의 유효성 검사를 실행
   form.addEventListener("input", validateForm);
   form.addEventListener("submit", handlePasswordUpdate);
 }
@@ -82,37 +84,63 @@ function setupEventListeners() {
  * 전체 폼 유효성 검사
  */
 function validateForm() {
-  const passwordValid = validatePassword();
-  const confirmPasswordValid = validateConfirmPassword();
+  const passwordValid = validatePasswordField();
+  const confirmPasswordValid = validateConfirmPasswordField();
 
-  document.getElementById("update-password-btn").disabled = !(passwordValid && confirmPasswordValid);
+  document.getElementById("edit-update-btn").disabled = !(passwordValid && confirmPasswordValid);
+}
+
+/**
+ * 새 비밀번호 필드 검증 및 헬퍼 텍스트 처리
+ */
+function validatePasswordField() {
+  const value = document.getElementById("edit-password-input").value.trim();
+  const passwordHelper = document.getElementById("edit-password-helper");
+
+  if (!value) {
+    console.log("*비밀번호를 입력해주세요.");
+    passwordHelper.textContent = "*비밀번호를 입력해주세요.";
+    passwordHelper.classList.remove("hidden");
+    return false;
+  } else if (!validatePassword(value)) {
+    console.log("*비밀번호는 8~20자, 대소문자, 숫자, 특수문자를 포함해야 합니다.");
+    passwordHelper.textContent = "*비밀번호는 8~20자, 대소문자, 숫자, 특수문자를 포함해야 합니다.";
+    passwordHelper.classList.remove("hidden");
+    return false;
+  } else {
+    passwordHelper.classList.add("hidden");
+    return true;
+  }
+}
+
+/**
+ * 비밀번호 확인 필드 검증 및 헬퍼 텍스트 처리
+ */
+function validateConfirmPasswordField() {
+  const passwordValue = document.getElementById("edit-password-input").value.trim();
+  const confirmPasswordValue = document.getElementById("edit-confirm-input").value.trim();
+  const confirmPasswordHelper = document.getElementById("edit-confirm-helper");
+
+  if (!confirmPasswordValue) {
+    confirmPasswordHelper.textContent = "*비밀번호 확인을 입력해주세요.";
+    confirmPasswordHelper.classList.remove("hidden");
+    return false;
+  } else if (passwordValue !== confirmPasswordValue) {
+    confirmPasswordHelper.textContent = "*비밀번호가 일치하지 않습니다.";
+    confirmPasswordHelper.classList.remove("hidden");
+    return false;
+  } else {
+    confirmPasswordHelper.classList.add("hidden");
+    return true;
+  }
 }
 
 /**
  * 비밀번호 유효성 검사 (8~20자, 대소문자, 숫자, 특수문자 포함)
  */
-function validatePassword() {
-  const password = document.getElementById("password").value.trim();
-  const helper = document.getElementById("password-helper");
-
-  const isValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,20}$/.test(password);
-
-  helper.classList.toggle("hidden", isValid);
-  return isValid;
-}
-
-/**
- * 비밀번호 확인 유효성 검사
- */
-function validateConfirmPassword() {
-  const password = document.getElementById("password").value.trim();
-  const confirmPassword = document.getElementById("confirm-password").value.trim();
-  const helper = document.getElementById("confirm-password-helper");
-
-  const isValid = password === confirmPassword && password !== "";
-
-  helper.classList.toggle("hidden", isValid);
-  return isValid;
+function validatePassword(password) {
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+  return regex.test(password);
 }
 
 /**
@@ -156,17 +184,14 @@ async function updatePassword(password) {
   }
 }
 
-/**
- * 비밀번호 변경 처리
- */
 function handlePasswordUpdate(event) {
   event.preventDefault();
 
-  if (!validatePassword() || !validateConfirmPassword()) {
+  if (!validatePasswordField() || !validateConfirmPasswordField()) {
     alert("비밀번호를 올바르게 입력해주세요.");
     return;
   }
 
-  const newPassword = document.getElementById("password").value.trim();
+  const newPassword = document.getElementById("edit-password-input").value.trim();
   updatePassword(newPassword);
 }
