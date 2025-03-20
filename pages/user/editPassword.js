@@ -162,8 +162,12 @@ async function updatePassword(password) {
     if (response.ok) {
       console.log("✅ 비밀번호 변경 성공");
       alert("비밀번호가 변경되었습니다. 다시 로그인해주세요.");
-      localStorage.removeItem("accessToken"); // 로그아웃 처리
-      loadPage("../pages/auth/login.js");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("id");
+      localStorage.removeItem("email");
+      localStorage.removeItem("nickname");
+      localStorage.removeItem("profileImage");
+      location.reload();
     } else if (response.status === 400) {
       const errorData = await response.json();
       console.error("⛔ 비밀번호 변경 실패:", errorData.error);

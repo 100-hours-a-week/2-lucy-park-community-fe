@@ -26,12 +26,12 @@ export async function render() {
       <section class="make-post-container">
         <h1 class="make-post-title">게시글 작성</h1>
         <form id="make-post-form">
-          <label for="title">제목 <span class="required">*</span></label>
-          <input type="text" id="title" maxlength="26" placeholder="제목을 입력해주세요. (최대 26자)" required />
+          <label for="post-title">제목 <span class="required">*</span></label>
+          <input type="text" id="post-title" maxlength="26" placeholder="제목을 입력해주세요. (최대 26자)" required />
           <p id="title-helper" class="helper-text hidden">* 제목은 최대 26자까지 가능합니다.</p>
 
-          <label for="content">내용 <span class="required">*</span></label>
-          <textarea id="content" placeholder="내용을 입력하세요." required></textarea>
+          <label for="post-content">내용 <span class="required">*</span></label>
+          <textarea id="post-content" placeholder="내용을 입력하세요." required></textarea>
 
           <div class="image-upload-section">
             <label>이미지</label>
@@ -54,8 +54,8 @@ function setupForm() {
     return;
   }
 
-  const titleInput = document.getElementById("title");
-  const contentInput = document.getElementById("content");
+  const titleInput = document.getElementById("post-title");
+  const contentInput = document.getElementById("post-content");
 
   // 유효성 검사 버튼 생성
   validationBtn = createValidationButton("submit-post-btn");
@@ -64,6 +64,7 @@ function setupForm() {
     postData.title = titleInput.value.trim();
     postData.content = contentInput.value.trim();
     const isValid = postData.title !== "" && postData.content !== "";
+    
     if (validationBtn?.updateValidationState) {
       validationBtn.updateValidationState(isValid);
     }
@@ -73,13 +74,16 @@ function setupForm() {
   contentInput.addEventListener("input", validateForm);
 
   setupImageUpload();
+  
+  // 폼 제출 이벤트 등록 (기존 validationBtn 대신 form에 직접 등록)
   form.addEventListener("submit", handleSubmitPost);
 }
 
+
 /** 이미지 업로드 처리 */
 function setupImageUpload() {
-  const fileInput = document.getElementById("image-upload");
-  const selectFileBtn = document.getElementById("select-file-btn");
+  const fileInput = document.getElementById("make-image-upload");
+  const selectFileBtn = document.getElementById("make-select-file-btn");
   const currentImageDiv = document.getElementById("current-image");
 
   selectFileBtn.addEventListener("click", () => fileInput.click());
@@ -93,7 +97,7 @@ function setupImageUpload() {
 async function handleSubmitPost(event) {
   event.preventDefault();
 
-  const file = document.getElementById("image-upload").files[0];
+  const file = document.getElementById("make-image-upload").files[0];
 
   if (!postData.title || !postData.content) {
     alert("제목과 내용을 입력해주세요!");
@@ -110,10 +114,17 @@ async function handleSubmitPost(event) {
   }
 
   await createPost(postData.title, postData.content, imageUrl);
+
+  // 게시글 등록 후 입력 필드 초기화
+  document.getElementById("post-title").value = "";
+  document.getElementById("post-content").value = "";
+  document.getElementById("current-image").textContent = "파일 없음";
+  postData = { title: "", content: "" };
 }
 
 /** 게시글 등록 요청 */
 async function createPost(title, content, imageUrl) {
+  console.log("post 요청 들어옴")
   const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
     alert("로그인이 필요합니다.");
