@@ -136,7 +136,8 @@ async function handleUpdatePost(event) {
   const file = document.getElementById("image-upload").files[0];
   let imageUrl = currentPost.imageUrl;
   if (file) {
-    imageUrl = await uploadImage(file);
+    const data = await uploadImage(file);
+    imageUrl = data.imageUrl;
     if (!imageUrl) {
       alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
       return;
