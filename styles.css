@@ -1,4 +1,8 @@
 /* 기본 스타일 초기화 */
+#app {
+    z-index: 9998;        /* 가장 앞에 오도록 */
+}
+
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -8,7 +12,7 @@ body {
     height: 100vh;
     margin: 0;
     margin-top: 10px;
-    background-color: #ffffff;
+    background-color: #f4f5f7;
 }
 
 hr {

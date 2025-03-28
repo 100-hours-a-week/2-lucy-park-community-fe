@@ -14,24 +14,63 @@ function initializeApp() {
   }
 
   // 로그인 상태 확인
-  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const storedUserToken = localStorage.getItem("accessToken");
+  const storedUserId = localStorage.getItem("id");
 
-  if (storedUser && storedUser.userStatus) {
+  if (storedUserToken != null && storedUserId != null) {
     // 로그인된 상태: 헤더와 hr을 보이게 설정
+    // 초기 헤더는 기본값(뒤로가기 버튼 없음)으로 렌더링해두고, loadPage에서 업데이트함.
     appElement.innerHTML = renderHeader();
     setupHeader();
-    hrElement.style.display = "block"; // hr 표시
+    hrElement.style.display = "block";
     loadPage("../pages/posts/posts.js");
   } else {
     // 로그인되지 않은 상태: 헤더와 hr을 숨김
     appElement.innerHTML = "";
-    hrElement.style.display = "none"; // hr 숨김
+    hrElement.style.display = "none";
     loadPage("../pages/auth/login.js");
   }
 }
 
+/**
+ * 페이지 스크립트에 따라 헤더를 업데이트합니다.
+ * /post/가 포함되거나 makePost.js, editPost.js인 경우 뒤로가기 버튼을 보입니다.
+ * 뒤로가기 버튼을 누르면 기본적으로 게시글 목록 페이지로 이동하도록 설정했습니다.
+ */
+function updateHeader(pageScript) {
+  // 로그인 상태가 아닌 경우 header 업데이트하지 않음
+  const storedUserToken = localStorage.getItem("accessToken");
+  const storedUserId = localStorage.getItem("id");
+  if (!storedUserToken || !storedUserId) {
+    return;
+  }
+
+  const appElement = document.getElementById("app");
+  if (!appElement) return;
+
+  let showBackButton = false;
+  let backButtonTarget = "../pages/posts/posts.js";
+
+  // 조건에 따라 뒤로가기 버튼 표시 여부 결정
+  if (
+    pageScript.includes("posts/post.js") || 
+    pageScript.includes("makePost.js") || 
+    pageScript.includes("editPost.js")
+  ) {
+    showBackButton = true;
+  }
+
+  // 헤더 재렌더링: 뒤로가기 버튼 여부에 따라 업데이트
+  appElement.innerHTML = renderHeader(backButtonTarget, showBackButton);
+  setupHeader(backButtonTarget, showBackButton);
+}
+
+
 /** loadPage 수정: params를 추가하여 데이터 전달 */
 export function loadPage(pageScript, params = {}) {
+  // 페이지 스크립트에 따라 헤더 업데이트 필요함~~
+  updateHeader(pageScript);
+
   import(pageScript)
     .then((module) => {
       const contentElem = document.getElementById("content");
@@ -57,7 +96,7 @@ export function loadPage(pageScript, params = {}) {
     });
 }
 
-/**  로그인 후 자동 새로고침 기능  */
+/** 로그인 후 자동 새로고침 기능 */
 function handleLoginRedirect(pageScript) {
   if (pageScript.includes("login.js")) {
     const storedUser = JSON.parse(localStorage.getItem("user"));

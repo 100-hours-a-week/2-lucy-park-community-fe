@@ -1,34 +1,6 @@
-import { BackButton, setupBackButton } from "../../components/BackButton/BackButton.js";
 import { loadPage } from "../../scripts/app.js";
-
-// 이미지 업로드 함수
-async function uploadImage(file) {
-    const formData = new FormData();
-    formData.append("imageFile", file);
-    formData.append("type", "profile");
-
-    try {
-        const response = await fetch("https://example.com/api/upload", {
-            method: "POST",
-            body: formData
-        });
-
-        if (response.status === 201) {
-            const data = await response.json();
-            console.log("✅ 이미지 업로드 성공:", data.imageUrl);
-            return data.imageUrl;
-        } else if (response.status === 400) {
-            console.error("⛔ 필수 항목 누락:", await response.json());
-        } else if (response.status === 413) {
-            console.error("⛔ 이미지 용량 초과");
-        } else if (response.status === 500) {
-            console.error("⛔ 서버 오류 발생");
-        }
-    } catch (error) {
-        console.error("⛔ 네트워크 오류:", error);
-    }
-    return null;
-}
+import { uploadImage } from "../../scripts/utils.js"; 
+import { API_BASE_URL } from "../../config.js";
 
 // 회원가입 요청 함수
 async function registerUser(email, password, nickname, imageUrl = null) {
@@ -36,24 +8,20 @@ async function registerUser(email, password, nickname, imageUrl = null) {
     if (imageUrl) requestBody.imageUrl = imageUrl;
 
     try {
-        const response = await fetch("https://example.com/users/signup", {
+        const response = await fetch(`${API_BASE_URL}/users`, {
             method: "POST",
             headers: { "Content-Type": "application/json;charset=UTF-8" },
             body: JSON.stringify(requestBody)
         });
 
         if (response.status === 201) {
-            const data = await response.json();
-            console.log("✅ 회원가입 성공:", data);
+            console.log("✅ 회원가입 성공");
             alert("회원가입 성공!");
             loadPage("../pages/auth/login.js");
-        } else if (response.status === 400) {
+        } else {
             const errorData = await response.json();
-            console.error("⛔ 필수 항목 누락:", errorData.error);
+            console.error("⛔ 회원가입 실패:", errorData.error);
             alert(errorData.error);
-        } else if (response.status === 500) {
-            console.error("⛔ 서버 오류 발생");
-            alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
         }
     } catch (error) {
         console.error("⛔ 네트워크 오류:", error);
@@ -64,9 +32,6 @@ async function registerUser(email, password, nickname, imageUrl = null) {
 export function render() {
     return `
     <section class="signup-container">
-      <div class="back-button">
-        ${BackButton("../pages/auth/login.js")}
-      </div>
       <h2>회원가입</h2>
       <form id="signup-form">
         <div class="profile-section">
@@ -80,21 +45,25 @@ export function render() {
         <div class="input-group">
           <label for="email">이메일</label>
           <input type="email" id="email" placeholder="이메일을 입력하세요" required />
+          <p id="email-helper" class="helper-text hidden">* 올바른 이메일 주소를 입력하세요.</p>
         </div>
 
         <div class="input-group">
           <label for="password">비밀번호</label>
           <input type="password" id="password" placeholder="비밀번호를 입력하세요" required />
+          <p id="password-helper" class="helper-text hidden">* 비밀번호는 8~20자, 대소문자, 숫자, 특수문자를 포함해야 합니다.</p>
         </div>
 
         <div class="input-group">
           <label for="confirm-password">비밀번호 확인</label>
           <input type="password" id="confirm-password" placeholder="비밀번호를 다시 입력하세요" required />
+          <p id="confirm-password-helper" class="helper-text hidden">* 비밀번호가 일치하지 않습니다.</p>
         </div>
 
         <div class="input-group">
           <label for="nickname">닉네임</label>
           <input type="text" id="nickname" placeholder="닉네임을 입력하세요" required />
+          <p id="nickname-helper" class="helper-text hidden">* 닉네임은 2~10자 이내여야 합니다.</p>
         </div>
 
         <button type="submit" id="signup-btn" disabled>회원가입</button>
@@ -107,7 +76,6 @@ export function render() {
 export function setup() {
     loadStyles();
     setupEventListeners();
-    setupBackButton("../pages/auth/login.js");
 }
 
 function loadStyles() {
@@ -148,11 +116,22 @@ function setupEventListeners() {
     });
 }
 
+// 유효성 검사
 function validateForm() {
-    const emailValid = document.getElementById("email").value.trim().length > 0;
-    const passwordValid = document.getElementById("password").value.trim().length >= 8;
-    const confirmPasswordValid = document.getElementById("password").value.trim() === document.getElementById("confirm-password").value.trim();
-    const nicknameValid = document.getElementById("nickname").value.trim().length >= 2;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const confirmPassword = document.getElementById("confirm-password").value.trim();
+    const nickname = document.getElementById("nickname").value.trim();
+
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const passwordValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/.test(password);
+    const confirmPasswordValid = password === confirmPassword;
+    const nicknameValid = nickname.length >= 2 && nickname.length <= 10;
+
+    document.getElementById("email-helper").classList.toggle("hidden", emailValid);
+    document.getElementById("password-helper").classList.toggle("hidden", passwordValid);
+    document.getElementById("confirm-password-helper").classList.toggle("hidden", confirmPasswordValid);
+    document.getElementById("nickname-helper").classList.toggle("hidden", nicknameValid);
 
     document.getElementById("signup-btn").disabled = !(emailValid && passwordValid && confirmPasswordValid && nicknameValid);
 }
@@ -173,12 +152,16 @@ async function handleSignup(event) {
     let imageUrl = null;
 
     if (profilePicInput) {
-        imageUrl = await uploadImage(profilePicInput);
-        if (!imageUrl) {
+        const uploadResponse = await uploadImage(profilePicInput);
+        console.log(uploadResponse);
+    
+        if (!uploadResponse || uploadResponse.message !== "upload_success") {
             alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
             return;
         }
-    }
+    
+        imageUrl = uploadResponse.imageUrl;
 
-    await registerUser(email, password, nickname, imageUrl);
+        await registerUser(email, password, nickname, imageUrl);  
+    }    
 }

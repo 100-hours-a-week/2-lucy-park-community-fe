@@ -1,4 +1,5 @@
 import { loadPage } from "../../scripts/app.js";
+import { API_BASE_URL } from "../../config.js";
 
 export function renderProfileLogoButton() {
     loadProfileStyles();
@@ -20,8 +21,13 @@ export function renderProfileLogoButton() {
 }
 
 export function setupProfileButton() {
-    let user = JSON.parse(localStorage.getItem("user")) || {};
-    let profilePic = user.profilePic || "../../assets/default-profile.png";
+    const profileImage = localStorage.getItem("profileImage") || {};
+    
+    // user.profileImage 가 있으면 API_BASE_URL + profileImage 경로,
+    // 없으면 기본 프로필 이미지
+    const profilePic = profileImage
+        ? `${API_BASE_URL}${profileImage}`
+        : "../../assets/default-profile.png";
 
     const profileImg = document.getElementById("profile-img");
     const profileButton = document.getElementById("profile-button");
@@ -30,7 +36,9 @@ export function setupProfileButton() {
     const editPassword = document.getElementById("change-password");
     const logoutBtn = document.getElementById("logout");
 
-    if (profileImg) profileImg.src = profilePic;
+    if (profileImg) {
+        profileImg.src = profilePic;
+    }
 
     profileButton.addEventListener("click", (event) => {
         event.stopPropagation();
@@ -67,13 +75,13 @@ async function logoutUser() {
 
     if (!accessToken) {
         alert("이미 로그아웃되었습니다.");
-        loadPage("../pages/auth/login.js");
+        location.reload();
         return;
     }
 
     try {
-        const response = await fetch("https://example.com/users/logout", {
-            method: "POST",
+        const response = await fetch(`${API_BASE_URL}/users/session`, {
+            method: "PATCH",
             headers: {
                 "Content-Type": "application/json;charset=UTF-8",
                 Authorization: `Bearer ${accessToken}`
@@ -106,10 +114,13 @@ async function logoutUser() {
  * 로그아웃 처리 (로컬 스토리지 정리 및 로그인 페이지 이동)
  */
 function handleLogout() {
-    localStorage.removeItem("user");
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("email");
+    localStorage.removeItem("id");
+    localStorage.removeItem("nickname");
+    localStorage.removeItem("profileImage");
     alert("로그아웃 되었습니다.");
-    loadPage("../pages/auth/login.js");
+    location.reload();
 }
 
 /**

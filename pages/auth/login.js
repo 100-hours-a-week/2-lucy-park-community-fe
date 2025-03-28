@@ -1,5 +1,6 @@
 import { loadPage } from "../../scripts/app.js"; 
-import { ValidationButton } from "../../components/ValidationButton/ValidationButton.js";
+import { createValidationButton } from "../../components/ValidationButton/ValidationButton.js";
+import { API_BASE_URL } from "../../config.js";
 
 export function render() {
   return `
@@ -57,7 +58,7 @@ function setupEventListeners() {
   const passwordInput = document.getElementById("password");
   const signupButton = document.getElementById("signup-btn");
 
-  const loginButton = new ValidationButton("login-btn");
+  const loginButton = createValidationButton("login-btn");
 
   usernameInput.addEventListener("input", () => {
     loginButton.updateValidationState(
@@ -132,7 +133,7 @@ async function handleLogin(event) {
   const password = document.getElementById("password").value.trim();
 
   try {
-    const response = await fetch("https://example.com/users/login", {
+    const response = await fetch(`${API_BASE_URL}/users/session`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json;charset=UTF-8"
@@ -142,17 +143,18 @@ async function handleLogin(event) {
     });
 
     if (response.status === 200) {
-      const data = await response.json();
-      console.log("로그인 성공:", data);
+      const res = await response.json();
+      console.log("✅ 로그인 성공:", res.data);
 
-      // Access Token 저장
-      localStorage.setItem("accessToken", data.data.accessToken);
-      localStorage.setItem("expiresIn", data.data.expiresIn);
-      localStorage.setItem("nickname", data.data.nickname);
-      localStorage.setItem("profileImage", data.data.profileImage);
+      // Token 저장
+      localStorage.setItem("id", res.data.id);
+      localStorage.setItem("email", res.data.email);
+      localStorage.setItem("accessToken", res.data.accessToken);
+      localStorage.setItem("nickname", res.data.nickname);
+      localStorage.setItem("profileImage", res.data.imageUrl);
 
       alert("로그인 성공!");
-      loadPage("../pages/posts/posts.js");
+      location.reload();
     } else if (response.status === 400) {
       const errorData = await response.json();
       console.error("⛔ 필수 항목 누락:", errorData.error);

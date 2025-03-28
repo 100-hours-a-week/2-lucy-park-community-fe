@@ -1,11 +1,12 @@
 import { loadPage } from "../../scripts/app.js";
 import { HoverButton, setupHoverButton } from "../../components/HoverButton/HoverButton.js";
 import { truncateText, formatDate, formatCount } from "../../scripts/utils.js"; 
+import { API_BASE_URL } from "../../config.js";
 
 export function render() {
   return `
     <section class="post-list-container">
-      <p class="welcome-message">안녕하세요,<br>아무 말 대잔치 게시판 입니다.</p>
+      <p class="welcome-message">안녕하세요,<br>아무 말 대잔치 <strong>게시판</strong> 입니다.</p>
       <div id="create-post-btn-container"></div>
       
       <ul id="post-list" class="post-list"></ul>
@@ -66,10 +67,10 @@ async function loadPosts() {
   loading.classList.remove("hidden");
 
   try {
-    const response = await fetch("https://example.com/api/posts", {
+    const response = await fetch(`${API_BASE_URL}/posts`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json;charset=UTF-8"
+        "Content-Type": "application/json"
       }
     });
 
@@ -82,31 +83,43 @@ async function loadPosts() {
       throw new Error("Unexpected response from server");
     }
 
-    localStorage.setItem("posts", JSON.stringify(posts));
-
-    posts.forEach(post => {
-      const li = document.createElement("li");
-      li.classList.add("post-card");
-      li.dataset.postId = post.postId;
-      li.innerHTML = `
-        <h3 class="post-title">${truncateText(post.title, 26)}</h3>
-        <p class="post-meta">
-          좋아요 ${formatCount(post.likes)} · 댓글 ${formatCount(post.comments)} · 조회수 ${formatCount(post.views)}
-          <span class="post-date">${formatDate(post.date)}</span>
-        </p>
-        <div class="post-author">
-          <span>${post.author}</span>
-        </div>
-      `;
-      li.addEventListener("click", () => loadPage("../pages/posts/post.js", { id: post.postId }));
-      postList.appendChild(li);
+    postList.innerHTML = posts.map(post => createPostCard(post)).join("");
+    
+    // 클릭 이벤트 부착
+    document.querySelectorAll(".post-card").forEach(card => {
+      card.addEventListener("click", (event) => {
+        const postId = event.currentTarget.dataset.postId;
+        loadPage("../pages/posts/post.js", { id: postId });
+      });
     });
+
   } catch (error) {
     console.error("⛔ 게시글 로딩 오류:", error);
     alert("게시글을 불러오는 데 실패했습니다. 다시 시도해주세요.");
   } finally {
     loading.classList.add("hidden");
   }
+}
+
+/**
+ *  PostCard 컴포넌트 - 게시글 카드 생성
+ *  추가 확장이 예상되지 않아 별도의 컴포넌트로 분리하지는 않았습니다
+ */
+function createPostCard(post) {
+  return `
+    <li class="post-card" data-post-id="${post.id}">
+      <div class="post-title">${truncateText(post.title, 26)}</div>
+      <p class="post-meta">
+        좋아요 ${formatCount(post.likeCount)} · 댓글 ${formatCount(Array.isArray(post.comments) ? post.comments.length : 0)} · 조회수 ${formatCount(post.viewCount)}
+        <span class="post-date">${formatDate(post.createdAt)}</span>
+      </p>
+      <div class="post-author">
+      ${post.user?.imageUrl ? 
+        `<img src="${API_BASE_URL}${post.user?.imageUrl}" alt="작성자 이미지" class="post-author-image">` : ""}
+        <span>${post.user.nickname}</span>
+      </div>
+    </li>
+  `;
 }
 
 // 무한 스크롤 (추후 API 페이징 기능 추가 가능)
