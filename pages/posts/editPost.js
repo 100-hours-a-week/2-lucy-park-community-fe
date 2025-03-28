@@ -160,7 +160,11 @@ async function updatePost(postId, title, content, imageUrl) {
   }
   if (imageUrl !== currentPost.imageUrl) {
     updateData.imageUrl = imageUrl;
+  } else {
+    updateData.imageUrl = currentPost.imageUrl;
   }
+
+  console.log(updateData.imageUrl);
   
   // 수정된 내용이 없으면 처리하지 않음
   if (Object.keys(updateData).length === 0) {

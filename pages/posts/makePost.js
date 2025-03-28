@@ -106,7 +106,8 @@ async function handleSubmitPost(event) {
 
   let imageUrl = null;
   if (file) {
-    imageUrl = await uploadImage(file);
+    const data = await uploadImage(file);
+    imageUrl = data.imageUrl;
     if (!imageUrl) {
       alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
       return;
@@ -131,12 +132,13 @@ async function createPost(title, content, imageUrl) {
     loadPage("../pages/auth/login.js");
     return;
   }
+  console.log(JSON.stringify({ title, content, imageUrl })); ///
 
   try {
     const response = await fetch(`${API_BASE_URL}/posts`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json;charset=UTF-8",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ title, content, imageUrl }),

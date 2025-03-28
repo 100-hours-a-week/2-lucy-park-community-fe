@@ -256,3 +256,11 @@
   background-color: #ACA0EB; 
   cursor: pointer;
 }
+
+/* 대댓글(자식 댓글) 컨테이너 - 한 번 들여쓰기 */
+.child-comment {
+  margin-left: 20px;
+  margin-top: 10px;
+  border-left: 2px solid #eee;
+  padding-left: 10px;
+}
